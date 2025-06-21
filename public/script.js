@@ -1,7 +1,4 @@
-console.log("hello");
-
 const musicList = document.querySelector("#song-playlist"); // Make sure you don't use ".music-list" if it doesn't exist
-
 const songs = {
   song1: {
     name: "Allah ho Allah ho",
@@ -33,7 +30,9 @@ const creatPlayCard = function ({ name, artist }) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 512 512"
-        class="w-6 h-6 flex-shrink-0 fill-white"
+        class="flex-shrink-0 "
+        height ='30px'
+        fill = 'white'
       >
         <path
           d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z"
@@ -47,7 +46,7 @@ const creatPlayCard = function ({ name, artist }) {
         aria-label="Play track"
         class="text-white text-sm hover:text-gray-300"
       >
-        <i class="fa-solid fa-play"></i>
+        <i id="play-icon" class="fa-solid fa-circle-play text-2xl"></i>
       </button>
     </div>`;
 
@@ -57,3 +56,33 @@ const creatPlayCard = function ({ name, artist }) {
 for (const song in songs) {
   creatPlayCard(songs[song]);
 }
+
+// Adding clciking the play button functionlity...
+
+const addRemoveClass = function (elName, addClass, removeClass) {
+  if (elName.classList.contains(addClass)) {
+    elName.classList.add(removeClass);
+    elName.classList.remove(addClass);
+  } else {
+    elName.classList.remove(removeClass);
+    elName.classList.add(addClass);
+  }
+};
+
+const playBtn = document.querySelectorAll("#play-icon");
+const playBtnPlaybar = document.querySelector("#play-icon-playbar");
+playBtnPlaybar.addEventListener("click", () => {
+  addRemoveClass(playBtnPlaybar, "fa-circle-play", "fa-circle-pause");
+});
+console.log(playBtnPlaybar);
+
+playBtn.forEach((e) => {
+  e.addEventListener("click", () => {
+    addRemoveClass(e, "fa-circle-pause", "fa-circle-play");
+    if (e.classList.contains("fa-circle-pause")) {
+      e.classList.add("animate-rotate");
+    } else {
+      e.classList.remove("animate-rotate");
+    }
+  });
+});
