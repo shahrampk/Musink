@@ -26,29 +26,29 @@ const creatPlayCard = function ({ name, artist }) {
   const li = document.createElement("li");
 
   li.innerHTML = `
-    <div class="flex items-center justify-between bg-gray-800 p-3 rounded-lg gap-2 hover:bg-gray-700 transition-colors">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 512 512"
-        class="flex-shrink-0 "
-        height ='30px'
-        fill = 'white'
-      >
-        <path
-          d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z"
-        />
-      </svg>
-      <div class="flex-1 min-w-0">
-        <p class="text-sm text-white truncate">${name}</p>
-        <p class="text-xs text-gray-400 truncate">${artist}</p>
-      </div>
-      <button
-        aria-label="Play track"
-        class="text-white text-sm hover:text-gray-300"
-      >
-        <i id="play-icon" class="fa-solid fa-circle-play text-2xl"></i>
-      </button>
-    </div>`;
+        <div class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-2 hover:bg-gray-700 transition-colors">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 512 512"
+            class="flex-shrink-0 "
+            height ='30px'
+            fill = 'white'
+          >
+            <path
+              d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z"
+            />
+          </svg>
+          <div class="flex-1 min-w-0">
+            <p class="song-name text-sm text-white truncate">${name}</p>
+            <p class="artist-name text-xs text-gray-400 truncate">${artist}</p>
+          </div>
+          <button
+            aria-label="Play track"
+            class="text-white text-sm hover:text-gray-300"
+          >
+            <i class="play-icon fa-solid fa-circle-play text-2xl"></i>
+          </button>
+        </div>`;
 
   musicList.appendChild(li);
 };
@@ -56,8 +56,6 @@ const creatPlayCard = function ({ name, artist }) {
 for (const song in songs) {
   creatPlayCard(songs[song]);
 }
-
-// Adding clciking the play button functionlity...
 
 const addRemoveClass = function (elName, addClass, removeClass) {
   if (elName.classList.contains(addClass)) {
@@ -69,8 +67,25 @@ const addRemoveClass = function (elName, addClass, removeClass) {
   }
 };
 
-const playBtn = document.querySelectorAll("#play-icon");
+const playBtn = document.querySelectorAll(".play-icon");
 const playBtnPlaybar = document.querySelector("#play-icon-playbar");
+
+const songCard = document.querySelectorAll(".song-card");
+const currentPlayedSong = document.querySelector("#current-playedSong");
+songCard.forEach((e) => {
+  e.addEventListener("click", () => {
+    console.log(e.children[1].children[0].textContent);
+    console.log(currentPlayedSong.textContent);
+
+    currentPlayedSong.textContent = e.children[1].children[0].textContent;
+    playBtnPlaybar.classList.remove('fa-circle-play');
+    playBtnPlaybar.classList.add('fa-circle-pause');
+  });
+});
+
+// ---------------------------- //
+
+// Adding clciking the play button functionlity...
 playBtnPlaybar.addEventListener("click", () => {
   addRemoveClass(playBtnPlaybar, "fa-circle-play", "fa-circle-pause");
 });
@@ -81,6 +96,7 @@ playBtn.forEach((e) => {
     addRemoveClass(e, "fa-circle-pause", "fa-circle-play");
     if (e.classList.contains("fa-circle-pause")) {
       e.classList.add("animate-rotate");
+      console.log("hello!");
     } else {
       e.classList.remove("animate-rotate");
     }
