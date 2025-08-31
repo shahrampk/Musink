@@ -1,10 +1,31 @@
 const musicList = document.querySelector("#song-playlist");
+// musicList.innerHTML = "";
 const playIconPlaybar = document.querySelector("#play-icon-playbar");
 const pauseIconPlaybar = document.querySelector("#pause-icon-playbar");
 const playPauseBtn = document.querySelectorAll(".play-pause-btn .btn");
 
+///////////////////////////////////////
+// HELPER FUNCTIONS...
+///////////////////////////////////////
+
+const switchBtn = function (target) {
+  target.parentNode
+    .querySelector(
+      `${
+        target.id === "play-icon-playbar"
+          ? "#pause-icon-playbar"
+          : "#play-icon-playbar"
+      }`
+    )
+    .classList.remove("hidden");
+};
+
+//////////////////////////////////////
+// MAIN FUNCTIONALLITY
+//////////////////////////////////////
+
 async function getSongs() {
-  let a = await fetch("http://127.0.0.1:5502/songs/");
+  let a = await fetch("http://127.0.0.1:5502/public/assets/songs/");
   let response = await a.text();
   const div = document.createElement("div");
   div.innerHTML = response;
@@ -20,33 +41,16 @@ async function getSongs() {
 
 async function main() {
   const songs = await getSongs();
-  const switchBtn = function (target) {
-    target.parentNode
-      .querySelector(
-        `${
-          target.id === "play-icon-playbar"
-            ? "#pause-icon-playbar"
-            : "#play-icon-playbar"
-        }`
-      )
-      .classList.remove("hidden");
-  };
   const audio = new Audio();
   audio.src = songs[0].href;
   playPauseBtn.forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      if (btn.id === "play-icon-playbar") {
-        audio.play();
-        const target = e.currentTarget;
-        target.classList.add("hidden");
-        switchBtn(target);
-      }
-      if (btn.id === "pause-icon-playbar") {
-        audio.pause();
-        const target = e.currentTarget;
-        target.classList.add("hidden");
-        switchBtn(target);
-      }
+      const target = e.currentTarget;
+      target.classList.add("hidden");
+      switchBtn(target);
+      if (btn.id === "play-icon-playbar") audio.play();
+
+      if (btn.id === "pause-icon-playbar") audio.pause();
     });
   });
 }

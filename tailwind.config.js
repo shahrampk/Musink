@@ -8,7 +8,7 @@ module.exports = {
         header: "#121212",
       },
       fontFamily: {
-        poppins: ["Roboto", "sans-serif"],
+        poppins: '"poppins", "sans-serif"',
       },
       animation: {
         rotate: "rotate 1.5s infinite linear ",
@@ -21,5 +21,17 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        ".scrollbar-hide": {
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
+        },
+        ".scrollbar-hide::-webkit-scrollbar": {
+          display: "none",
+        },
+      });
+    },
+  ],
 };

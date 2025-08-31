@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="imgs/logo.jpg" />
+  <link rel="icon" type="image/png" href="../public/assets/logo.png" />
   <link rel="stylesheet" href="style.css" />
   <title>MUSINK</title>
   <script defer src="script.js"></script>
@@ -21,7 +21,7 @@
 <body class="font-poppins text-gray-100 bg-black">
   <div class="flex h-screen gap-3 p-3">
     <!-- Sidebar -->
-    <div class="md:flex hidden flex-col gap-2 w-1/4 ">
+    <div class="lg:flex hidden flex-col gap-2 w-1/4 ">
       <div class="bg-gray-900 flex flex-col rounded-lg p-2 gap-1">
         <div class="p-1">
           <svg fill="#fff" version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 131" height="85">
@@ -48,34 +48,38 @@
         </li>
       </ul> -->
       </div>
-      <div class="bg-gray-900 rounded-lg h-full p-4 overflow-y-auto">
-        <span class="text-3xl font-bold py-3 inline-block">Your Library</span>
-        <ul id="song-playlist" class="mt-4 flex flex-col gap-2">
-          <li
-            class="song-card  items-center flex justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-3 hover:bg-gray-700 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="flex-shrink-0 " height='30px'
-              fill='white'>
-              <path
-                d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z" />
-            </svg>
-            <div class="flex-1 min-w-0">
-              <p id="song-Name" class="text-sm text-white truncate">${name}</p>
-              <p id="artist-Name" class="text-xs text-gray-400 truncate">${artist}</p>
+      <div class="bg-gray-900 rounded-lg h-full overflow-y-auto">
+        <div class=" py-1 p-4 border-b border-gray-700">
+          <h2 class="text-3xl font-bold py-3 inline-block">Your Library</h2>
+        </div>
+        <div>
+          <ul id="song-playlist" class="mt-4 flex flex-col gap-2 p-4 ">
+            <!-- Playlist items will be dynamically added here -->
+            <div id="add-playlist"
+              class="flex bg-gray-100 text-gray-900 p-3 rounded-lg w-fit gap-4 items-center cursor-pointer hover:scale-105 transition-all duration-300">
+              <h3 class="font-semibold text-lg">Add Your music Album</h3>
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
+                  <path fill-rule="evenodd"
+                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z"
+                    clip-rule="evenodd" />
+                </svg>
+
+              </div>
             </div>
-            <button aria-label="Play track" class="text-white text-sm hover:text-gray-300">
-              <i id="play-icon" class="fa-solid fa-circle-play text-2xl"></i>
-            </button>
-          </li>
-        </ul>
+          </ul>
+        </div>
       </div>
     </div>
     <!-- Main Content -->
-    <div class="bg-gray-900 rounded-lg w-full md:w-3/4 overflow-hidden">
+    <div class="bg-gray-900 rounded-lg w-full lg:w-3/4 overflow-hidden">
       <header class="p-4 flex justify-between items-center bg-gray-800 border-b border-gray-700">
-        <button aria-label="Toggle menu" class="md:hidden text-2xl" id="menu-toggle">
+        <button aria-label="Toggle menu"
+          class="lg:hidden text-2xl hover:bg-backGround rounded-md transition-all duration-200 px-2.5 py-1.5"
+          id="menu-toggle">
           <i class="fa-solid fa-bars"></i>
         </button>
-        <span class="text-2xl font-semibold hidden md:block">Musink Playlist</span>
+        <span class="text-2xl font-semibold hidden lg:block">Musink Playlist</span>
         <div class="flex items-center gap-4">
           <button type="button"
             class="px-5 py-2 font-bold text-neutral-400 rounded-full hover:bg-gray-900/45 duration-300 transition-all">
@@ -87,65 +91,101 @@
           </button>
         </div>
       </header>
-      <div class="text-1xl font-semibold md:hidden p-5 h-auto">
+      <div class="text-2xl font-semibold lg:hidden p-5 h-auto">
         Musink Playlist
       </div>
-      <div class="p-7 gap-5 flex flex-wrap overflow-y-scroll h-full">
-        <div class="bg-gray-500/25 rounded-md max-w-56 h-fit overflow-hidden">
-          <img src="./imgs/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
-            class="w-full object-cover" />
-          <div class="p-2 flex flex-col gap-3 pb-3">
+      <div
+        class="p-7 gap-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 overflow-y-scroll scrollbar-hide h-4/5 pb-16 lg:pb-8">
+        <div class="bg-gray-500/10 rounded-md h-fit">
+          <div class="">
+            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+              class="w-full object-cover rounded-md" />
+          </div>
+          <div class="p-3 flex flex-col gap-3">
             <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider">
+            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
               Javed-Mohsin, Arijit Singh, Shreya Ghoshal
             </p>
           </div>
         </div>
-        <div class="bg-gray-500/25 rounded-md max-w-56 h-fit overflow-hidden">
-          <img src="./imgs/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
-            class="w-full object-cover" />
-          <div class="p-2 flex flex-col gap-3 pb-3">
+        <div class="bg-gray-500/10 rounded-md h-fit">
+          <div class="">
+            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+              class="w-full object-cover rounded-md" />
+          </div>
+          <div class="p-3 flex flex-col gap-3">
             <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider">
+            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
               Javed-Mohsin, Arijit Singh, Shreya Ghoshal
             </p>
           </div>
         </div>
-        <div class="bg-gray-500/25 rounded-md max-w-56 h-fit overflow-hidden">
-          <img src="./imgs/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
-            class="w-full object-cover" />
-          <div class="p-2 flex flex-col gap-3 pb-3">
+        <div class="bg-gray-500/10 rounded-md h-fit">
+          <div class="">
+            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+              class="w-full object-cover rounded-md" />
+          </div>
+          <div class="p-3 flex flex-col gap-3">
             <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider">
+            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
               Javed-Mohsin, Arijit Singh, Shreya Ghoshal
             </p>
           </div>
         </div>
-        <div class="bg-gray-500/25 rounded-md max-w-56 h-fit overflow-hidden">
-          <img src="./imgs/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
-            class="w-full object-cover" />
-          <div class="p-2 flex flex-col gap-3 pb-3">
+        <div class="bg-gray-500/10 rounded-md h-fit">
+          <div class="">
+            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+              class="w-full object-cover rounded-md" />
+          </div>
+          <div class="p-3 flex flex-col gap-3">
             <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider">
+            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
               Javed-Mohsin, Arijit Singh, Shreya Ghoshal
             </p>
           </div>
         </div>
-        <div class="bg-gray-500/25 rounded-md max-w-56 h-fit overflow-hidden">
-          <img src="./imgs/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
-            class="w-full object-cover" />
-          <div class="p-2 flex flex-col gap-3 pb-3">
+        <div class="bg-gray-500/10 rounded-md h-fit">
+          <div class="">
+            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+              class="w-full object-cover rounded-md" />
+          </div>
+          <div class="p-3 flex flex-col gap-3">
             <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider">
+            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
               Javed-Mohsin, Arijit Singh, Shreya Ghoshal
             </p>
           </div>
         </div>
+        <div class="bg-gray-500/10 rounded-md h-fit">
+          <div class="">
+            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+              class="w-full object-cover rounded-md" />
+          </div>
+          <div class="p-3 flex flex-col gap-3">
+            <p class="font-bold text-xl">Pal Pal</p>
+            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
+              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
+            </p>
+          </div>
+        </div>
+        <div class="bg-gray-500/10 rounded-md h-fit">
+          <div class="">
+            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+              class="w-full object-cover rounded-md" />
+          </div>
+          <div class="p-3 flex flex-col gap-3">
+            <p class="font-bold text-xl">Pal Pal</p>
+            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
+              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
+            </p>
+          </div>
+        </div>
+      
         <!-- ////////////////////////////////////////// -->
       </div>
       <!-- PLAYBAR -->
       <div
-        class="bg-gray-800 px-4 py-3 min-h-24 rounded-tr-lg rounded-tl-lg grid grid-cols-7 items-center justify-between fixed bottom-2 md:w-[calc(100%-27%)] right-3 ">
+        class="bg-gray-800 px-4 py-3 min-h-24 rounded-tr-lg rounded-tl-lg grid grid-cols-7 items-center justify-between fixed bottom-2 lg:w-[calc(100%-27%)] right-3 ">
         <div id="current-playedSong" class="text-2xl col-span-3">
           <p></p>
         </div>
@@ -163,13 +203,14 @@
               <button aria-label="Play track" class="cursor-pointer play-pause-btn" data-play="current-track">
 
                 <!-- pause Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" height="40" class="btn hidden" fill="currentColor" id="pause-icon-playbar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" height="40" class="btn hidden"
+                  fill="currentColor" id="pause-icon-playbar">
                   <path
                     d="M176 96C149.5 96 128 117.5 128 144L128 496C128 522.5 149.5 544 176 544L240 544C266.5 544 288 522.5 288 496L288 144C288 117.5 266.5 96 240 96L176 96zM400 96C373.5 96 352 117.5 352 144L352 496C352 522.5 373.5 544 400 544L464 544C490.5 544 512 522.5 512 496L512 144C512 117.5 490.5 96 464 96L400 96z" />
                 </svg>
                 <!-- play Icon -->
-                <svg id="play-icon-playbar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="btn"
-                  height="40">
+                <svg id="play-icon-playbar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                  class="btn" height="40">
                   <path fill-rule="evenodd"
                     d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
                     clip-rule="evenodd" />
