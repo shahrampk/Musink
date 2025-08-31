@@ -1,24 +1,54 @@
 const musicList = document.querySelector("#song-playlist");
+const playIconPlaybar = document.querySelector("#play-icon-playbar");
+const pauseIconPlaybar = document.querySelector("#pause-icon-playbar");
+const playPauseBtn = document.querySelectorAll(".play-pause-btn .btn");
 
 async function getSongs() {
-  let a = fetch("http://127.0.0.1:5502/songs/");
-  let response = (await a).text();
-  let songs;
-  response.then((data) => {
-    const div = document.createElement("div");
-    div.innerHTML = data;
-    const as = [...div.querySelectorAll("a")];
-    songs = as.filter((a) => {
-      if (a.href.endsWith(".mp3")) return a;
-    });
+  let a = await fetch("http://127.0.0.1:5502/songs/");
+  let response = await a.text();
+  const div = document.createElement("div");
+  div.innerHTML = response;
+  const as = div.querySelectorAll("a");
+  const songs = [];
+  as.forEach((a) => {
+    if (a.href.endsWith(".mp3")) {
+      songs.push(a);
+    }
   });
-  console.log(songs);
   return songs;
 }
 
 async function main() {
   const songs = await getSongs();
-  console.log(songs);
+  const switchBtn = function (target) {
+    target.parentNode
+      .querySelector(
+        `${
+          target.id === "play-icon-playbar"
+            ? "#pause-icon-playbar"
+            : "#play-icon-playbar"
+        }`
+      )
+      .classList.remove("hidden");
+  };
+  const audio = new Audio();
+  audio.src = songs[0].href;
+  playPauseBtn.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      if (btn.id === "play-icon-playbar") {
+        audio.play();
+        const target = e.currentTarget;
+        target.classList.add("hidden");
+        switchBtn(target);
+      }
+      if (btn.id === "pause-icon-playbar") {
+        audio.pause();
+        const target = e.currentTarget;
+        target.classList.add("hidden");
+        switchBtn(target);
+      }
+    });
+  });
 }
 main();
 /*
