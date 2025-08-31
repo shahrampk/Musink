@@ -10,10 +10,6 @@ module.exports = {
       fontFamily: {
         poppins: ["Roboto", "sans-serif"],
       },
-
-      minWidth: {
-        1170: "73vw",
-      },
       animation: {
         rotate: "rotate 1.5s infinite linear ",
       },

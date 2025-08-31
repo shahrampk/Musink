@@ -1,32 +1,32 @@
-const musicList = document.querySelector("#song-playlist"); // Make sure you don't use ".music-list" if it doesn't exist
-const songs = {
-  song1: {
-    name: "Allah ho Allah ho",
-    artist: "Shahram",
-    duration: "3:45",
-  },
-  song2: {
-    name: "Dil Dil Pakistan",
-    artist: "Vital Signs",
-    duration: "4:20",
-  },
-  song3: {
-    name: "Afreen Afreen",
-    artist: "Nusrat Fateh Ali Khan",
-    duration: "5:10",
-  },
-  song4: {
-    name: "Tajdar-e-Haram",
-    artist: "Atif Aslam",
-    duration: "6:00",
-  },
-};
+const musicList = document.querySelector("#song-playlist");
 
+async function getSongs() {
+  let a = fetch("http://127.0.0.1:5502/songs/");
+  let response = (await a).text();
+  let songs;
+  response.then((data) => {
+    const div = document.createElement("div");
+    div.innerHTML = data;
+    const as = [...div.querySelectorAll("a")];
+    songs = as.filter((a) => {
+      if (a.href.endsWith(".mp3")) return a;
+    });
+  });
+  console.log(songs);
+  return songs;
+}
+
+async function main() {
+  const songs = await getSongs();
+  console.log(songs);
+}
+main();
+/*
+musicList.innerHTML = "";
 const creatPlayCard = function ({ name, artist }) {
   const li = document.createElement("li");
-
   li.innerHTML = `
-        <div class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-2 hover:bg-gray-700 transition-colors">
+        <div class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-3 hover:bg-gray-700 transition-colors">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
@@ -46,7 +46,11 @@ const creatPlayCard = function ({ name, artist }) {
             aria-label="Play track"
             class="text-white text-sm hover:text-gray-300"
           >
-            <i class="play-icon fa-solid fa-circle-play text-2xl"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height='25'>
+             <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+          </svg>
+
+
           </button>
         </div>`;
 
@@ -72,14 +76,13 @@ const playBtnPlaybar = document.querySelector("#play-icon-playbar");
 
 const songCard = document.querySelectorAll(".song-card");
 const currentPlayedSong = document.querySelector("#current-playedSong");
-songCard.forEach((e) => {
-  e.addEventListener("click", () => {
-    console.log(e.children[1].children[0].textContent);
+songCard.forEach((song) => {
+  song.addEventListener("click", () => {
+    const songName = song.querySelector(".song-name");
     console.log(currentPlayedSong.textContent);
-
-    currentPlayedSong.textContent = e.children[1].children[0].textContent;
-    playBtnPlaybar.classList.remove('fa-circle-play');
-    playBtnPlaybar.classList.add('fa-circle-pause');
+    currentPlayedSong.textContent = songName.textContent;
+    playBtnPlaybar.classList.remove("fa-circle-play");
+    playBtnPlaybar.classList.add("fa-circle-pause");
   });
 });
 
@@ -96,9 +99,9 @@ playBtn.forEach((e) => {
     addRemoveClass(e, "fa-circle-pause", "fa-circle-play");
     if (e.classList.contains("fa-circle-pause")) {
       e.classList.add("animate-rotate");
-      console.log("hello!");
     } else {
       e.classList.remove("animate-rotate");
     }
   });
 });
+ */
