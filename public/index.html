@@ -50,24 +50,10 @@
       </div>
       <div class="bg-gray-900 rounded-lg h-full overflow-y-auto">
         <div class=" py-1 p-4 border-b border-gray-700">
-          <h2 class="text-3xl font-bold py-3 inline-block">Your Library</h2>
+          <h2 class="text-3xl font-bold py-3 inline-block">Your Songs</h2>
         </div>
         <div>
           <ul id="song-playlist" class="mt-4 flex flex-col gap-2 p-4 ">
-            <!-- Playlist items will be dynamically added here -->
-            <div id="add-playlist"
-              class="flex bg-gray-200/85 hover:bg-gray-100 text-gray-900 p-3 rounded-lg w-fit gap-4 items-center cursor-pointer hover:scale-105 transition-all duration-300 mb-2">
-              <h3 class="font-semibold text-lg">Add Your music Album</h3>
-              <div>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
-                  <path fill-rule="evenodd"
-                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z"
-                    clip-rule="evenodd" />
-                </svg>
-
-              </div>
-              <input type="file" id="albumInput" accept="audio/*" multiple class="hidden" />
-            </div>
           </ul>
         </div>
       </div>
@@ -81,104 +67,97 @@
           <i class="fa-solid fa-bars"></i>
         </button>
         <span class="text-2xl font-semibold hidden lg:block">Musink Playlist</span>
-        <div class="flex items-center gap-4">
-          <button type="button"
+        <div class="flex items-center justify-center gap-4">
+          <!-- <button type="button"
             class="px-5 py-2 font-bold text-neutral-400 rounded-full hover:bg-gray-900/45 duration-300 transition-all">
             Sign up
           </button>
           <button type="button"
             class="px-5 py-2 font-bold bg-gray-100 text-gray-950 rounded-full hover:scale-110 transition-all">
             Log in
-          </button>
+          </button> -->
+          <!-- Playlist items will be dynamically added here -->
+          <div id="add-playlist"
+            class="flex bg-gray-200/85 hover:bg-gray-100 text-gray-900 p-2.5 rounded-lg w-fit gap-4 items-center cursor-pointer hover:scale-105 transition-all duration-300">
+            <h3 class="font-semibold hidden sm:block">Add Your music Album</h3>
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
+                <path fill-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z"
+                  clip-rule="evenodd" />
+              </svg>
+
+            </div>
+            <input type="file" id="albumInput" accept="audio/*" multiple class="hidden" />
+          </div>
         </div>
       </header>
       <div class="text-2xl font-semibold lg:hidden p-5 h-auto">
         Musink Playlist
       </div>
-      <div
+      <div id="album"
         class="p-7 gap-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 overflow-y-scroll scrollbar-hide h-4/5 pb-16 lg:pb-8">
-        <div class="bg-gray-500/10 rounded-md h-fit">
-          <div class="">
-            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+        <div class="rounded-md h-fit">
+          <div>
+            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3 flex flex-col gap-3">
-            <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
-              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
-            </p>
+            <p class="text-sm playlist-description line-clamp-2">Sad Songs</p>
           </div>
         </div>
-        <div class="bg-gray-500/10 rounded-md h-fit">
-          <div class="">
-            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+        <div class="rounded-md h-fit">
+          <div>
+            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3 flex flex-col gap-3">
-            <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
-              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
-            </p>
+            <p class="text-sm playlist-description line-clamp-2">Sad Songs</p>
           </div>
         </div>
-        <div class="bg-gray-500/10 rounded-md h-fit">
-          <div class="">
-            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+        <div class="rounded-md h-fit">
+          <div>
+            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3 flex flex-col gap-3">
-            <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
-              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
-            </p>
+            <p class="text-sm playlist-description line-clamp-2">Sad Songs</p>
           </div>
         </div>
-        <div class="bg-gray-500/10 rounded-md h-fit">
-          <div class="">
-            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+        <div class="rounded-md h-fit">
+          <div>
+            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3 flex flex-col gap-3">
-            <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
-              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
-            </p>
+            <p class="text-sm playlist-description line-clamp-2">Sad Songs</p>
           </div>
         </div>
-        <div class="bg-gray-500/10 rounded-md h-fit">
-          <div class="">
-            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+        <div class="rounded-md h-fit">
+          <div>
+            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3 flex flex-col gap-3">
-            <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
-              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
-            </p>
+            <p class="text-sm playlist-description line-clamp-2">Sad Songs</p>
           </div>
         </div>
-        <div class="bg-gray-500/10 rounded-md h-fit">
-          <div class="">
-            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+        <div class="rounded-md h-fit">
+          <div>
+            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3 flex flex-col gap-3">
-            <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
-              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
-            </p>
+            <p class="text-sm playlist-description line-clamp-2">Sad Songs</p>
           </div>
         </div>
-        <div class="bg-gray-500/10 rounded-md h-fit">
-          <div class="">
-            <img src="./assets/music-images/ab67616d00001e0285c5968be0d0d9c545241124.jpeg" alt="Pal Pal album cover"
+        <div class="rounded-md h-fit">
+          <div>
+            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3 flex flex-col gap-3">
-            <p class="font-bold text-xl">Pal Pal</p>
-            <p class="text-gray-100 text-sm leading-6 tracking-wider line-clamp-2">
-              Javed-Mohsin, Arijit Singh, Shreya Ghoshal
-            </p>
+            <p class="text-sm playlist-description line-clamp-2">Sad Songs</p>
           </div>
         </div>
 

@@ -2,6 +2,10 @@ const musicList = document.querySelector("#song-playlist");
 const playIconPlaybar = document.querySelector("#play-icon-playbar");
 const pauseIconPlaybar = document.querySelector("#pause-icon-playbar");
 const playPauseBtn = document.querySelectorAll(".play-pause-btn .btn");
+const addBtn = document.getElementById("add-playlist");
+const albumInput = document.getElementById("albumInput");
+const albumEl = document.getElementById("album");
+albumEl.innerHTML = "";
 
 ///////////////////////////////////////
 // HELPER FUNCTIONS...
@@ -55,52 +59,110 @@ const playPauseBtn = document.querySelectorAll(".play-pause-btn .btn");
 // }
 // main();
 
-//////////////////////////////
-// TESTING...
-//////////////////////////////
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
 
-const addBtn = document.getElementById("add-playlist");
-const albumInput = document.getElementById("albumInput");
-
-// Trigger file input on click
-addBtn.addEventListener("click", (e) => {
-  console.log("click", e.target);
-  albumInput.click();
-});
-const uploadSongs = function () {
-  // Get selected files
-  albumInput.addEventListener("change", (e) => {
-    const files = [...e.target.files];
-    files.forEach((file) => {
-      const card = `<div
-                  class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-gray-700 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="flex-shrink-0 " height='30px' fill='white'>
-                    <path
-                      d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z" />
-                  </svg>
-                  <div class="flex-1">
-                    <p class="song-name text-white truncate">${file.name}</p>
-
-                  </div>
-                  <button aria-label="Play track" class="text-white text-sm hover:text-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height='25'>
-                      <path fill-rule="evenodd"
-                        d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                        clip-rule="evenodd" />
-                    </svg>
-
-
-                  </button>
-                </div>`;
-      musicList.innerHTML += card;
-      musicList.insertAdjacentHTML("beforeend", card);
-      // Reset input so user can reselect same files
-      albumInput.value = "";
-    });
-  });
+// Save to localStorage
+const setLocalStorage = function (itemName, item) {
+  localStorage.setItem(itemName, JSON.stringify(item));
 };
 
-uploadSongs();
+// Load from localStorage
+const getLocalStorage = function (itemName) {
+  return JSON.parse(localStorage.getItem(itemName)) || [];
+};
+let album = getLocalStorage("album");
+setLocalStorage("album", album);
+
+// Render one album
+function renderSongs(songs) {
+  songs.forEach((song) => {
+    const card = `
+      <div class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-gray-700 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="flex-shrink-0" height="30" fill="white">
+          <path d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z" />
+        </svg>
+        <div class="flex-1">
+          <p class="song-name text-white truncate">${song.name}</p>
+        </div>
+        <button aria-label="Play track" class="text-white text-sm hover:text-gray-300">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="25">
+            <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>`;
+    musicList.insertAdjacentHTML("beforeend", card);
+  });
+}
+// Render one Playlist
+function renderAlbum(album) {
+  if (album.length < 0) return;
+  albumEl.innerHTML = "";
+  console.log(album);
+  album.forEach((_, i) => {
+    console.log(i + 1);
+    const card = `
+       <div class="rounded-md h-fit">
+          <div>
+            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
+              class="w-full object-cover rounded-md" />
+          </div>
+          <div class="p-3 flex flex-col gap-3">
+            <p class="text-sm playlist-description line-clamp-2">Playlsit ${
+              i + 1
+            }</p>
+          </div>
+        </div>`;
+    albumEl.insertAdjacentHTML("beforeend", card);
+  });
+}
+
+// Open file dialog on click
+addBtn.addEventListener("click", () => {
+  albumInput.click();
+});
+
+// Upload handler
+albumInput.addEventListener("change", (e) => {
+  const files = Array.from(e.target.files);
+
+  // Convert files to metadata objects
+  const newPlayList = files.map((file) => ({
+    name: file.name,
+    type: file.type,
+    size: file.size,
+  }));
+  album.push(newPlayList);
+  // Get existing albums
+  setLocalStorage("album", album);
+
+  renderAlbum(album);
+
+  // let playlists = getLocalStorage("playlists");
+
+  // console.log(playlists);
+  // // Push new album (array of songs)
+  // playlists.push(newAlbum);
+
+  // // Save back
+  // setLocalStorage("playlists", playlists);
+
+  // // Render the newly added album
+  // renderAlbum(playlists);
+
+  albumInput.value = ""; // reset input so same file can be selected again
+});
+
+// Load songs on page refresh
+document.addEventListener("DOMContentLoaded", () => {
+ renderAlbum(album);
+});
+
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------- //
+
 /*
 musicList.innerHTML = "";
 const creatPlayCard = function ({ name, artist }) {
