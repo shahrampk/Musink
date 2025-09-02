@@ -224,7 +224,7 @@ function renderAlbum(album) {
          playlist[playlist.length - 1]
        }'>
           <div>
-            <img src="./assets/music-images/playlist-image.jpg" alt="Playlist cover"
+            <img src="../public/assets/playlist-image.jpg" alt="Playlist cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3">
