@@ -4,7 +4,8 @@ const pauseIconPlaybar = document.querySelector("#pause-icon-playbar");
 const playPauseBtn = document.querySelector(".play-pause-btn");
 const prevBtn = document.querySelector('[aria-label="Previous track"]');
 const nextBtn = document.querySelector('[aria-label="Next track"]');
-const progressBar = document.querySelector("input[type=range]");
+const progressBar = document.querySelector("#progress-bar");
+const volume = document.querySelector("#volumn_control");
 const durationEl = document.querySelector("#duration");
 const currentPlayedSong = document.querySelector("#current-playedSong p");
 
@@ -333,7 +334,15 @@ audioPlayer.addEventListener("timeupdate", () => {
 progressBar.addEventListener("input", () => {
   if (audioPlayer.duration) {
     audioPlayer.currentTime = (progressBar.value / 100) * audioPlayer.duration;
+    console.log((audioPlayer.volume = Math.random()));
   }
+});
+
+// Volumn progress
+volume.addEventListener("input", () => {
+  console.log(volume.value / 100);
+  console.log(audioPlayer.volume);
+  audioPlayer.volume = volume.value / 100;
 });
 
 // Helper: format seconds → mm:ss
