@@ -1,7 +1,13 @@
 const musicList = document.querySelector("#song-playlist");
 const playIconPlaybar = document.querySelector("#play-icon-playbar");
 const pauseIconPlaybar = document.querySelector("#pause-icon-playbar");
-const playPauseBtn = document.querySelectorAll(".play-pause-btn .btn");
+const playPauseBtn = document.querySelector(".play-pause-btn");
+const prevBtn = document.querySelector('[aria-label="Previous track"]');
+const nextBtn = document.querySelector('[aria-label="Next track"]');
+const progressBar = document.querySelector("input[type=range]");
+const durationEl = document.querySelector("#duration");
+const currentPlayedSong = document.querySelector("#current-playedSong p");
+
 const addBtn = document.getElementById("add-playlist");
 const albumInput = document.getElementById("albumInput");
 const albumEl = document.getElementById("album");
@@ -11,57 +17,29 @@ albumEl.innerHTML = "";
 // HELPER FUNCTIONS...
 ///////////////////////////////////////
 
-// const switchBtn = function (target) {
-//   target.parentNode
-//     .querySelector(
-//       `${
-//         target.id === "play-icon-playbar"
-//           ? "#pause-icon-playbar"
-//           : "#play-icon-playbar"
-//       }`
-//     )
-//     .classList.remove("hidden");
-// };
+const resetBtn = function (musicList) {
+  musicList.querySelectorAll(".play-btn").forEach((other) => {
+    other.querySelector(".play-icon").classList.remove("hidden");
+    other.querySelector(".pause-icon").classList.add("hidden");
+  });
+};
 
-// //////////////////////////////////////
-// // MAIN FUNCTIONALLITY
-// //////////////////////////////////////
-
-// async function getSongs() {
-//   let a = await fetch("http://127.0.0.1:5502/public/assets/songs/");
-//   let response = await a.text();
-//   const div = document.createElement("div");
-//   div.innerHTML = response;
-//   const as = div.querySelectorAll("a");
-//   const songs = [];
-//   as.forEach((a) => {
-//     if (a.href.endsWith(".mp3")) {
-//       songs.push(a);
-//     }
-//   });
-//   return songs;
-// }
-//  async function main() {
-//   const songs = await getSongs();
-//   const audio = new Audio();
-//   audio.src = songs[0].href;
-//   console.dir(songs[0]);
-
-//   playPauseBtn.forEach((btn) => {
-//     btn.addEventListener("click", (e) => {
-//       const target = e.currentTarget;
-//       target.classList.add("hidden");
-//       switchBtn(target);
-//       if (btn.id === "play-icon-playbar") audio.play();
-//       if (btn.id === "pause-icon-playbar") audio.pause();
-//     });
-//   });
-// }
-// main();
-
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
+// Toggle play / pause per song
+const togglePlayPause = function (songId, playIcon, pauseIcon) {
+  if (audioPlayer.dataset.currentId === songId && !audioPlayer.paused) {
+    audioPlayer.pause();
+    playIcon.classList.remove("hidden");
+    pauseIcon.classList.add("hidden");
+    playIconPlaybar.classList.remove("hidden");
+    pauseIconPlaybar.classList.add("hidden");
+  } else {
+    playSongFromDB(songId, "play");
+    playIcon.classList.add("hidden");
+    pauseIcon.classList.remove("hidden");
+    playIconPlaybar.classList.add("hidden");
+    pauseIconPlaybar.classList.remove("hidden");
+  }
+};
 
 // Save to localStorage
 const setLocalStorage = function (itemName, item) {
@@ -72,44 +50,191 @@ const setLocalStorage = function (itemName, item) {
 const getLocalStorage = function (itemName) {
   return JSON.parse(localStorage.getItem(itemName)) || [];
 };
+
 let album = getLocalStorage("album");
 setLocalStorage("album", album);
 
-// Render one album
+// Global audio player
+const audioPlayer = new Audio();
+let currentPlaylist = []; // store current playlist songs
+let currentIndex = -1; // track which song is playing
+
+// ------------------------- //
+// IndexedDB setup
+// ------------------------- //
+let db;
+const openRequest = indexedDB.open("music-app", 1);
+
+openRequest.onsuccess = () => {
+  db = openRequest.result;
+  console.log("IndexedDB connected ✅");
+};
+
+openRequest.onerror = (e) => {
+  console.error("Error opening IndexedDB ❌", e.target.error);
+};
+
+openRequest.onupgradeneeded = () => {
+  db = openRequest.result;
+  if (!db.objectStoreNames.contains("songs")) {
+    let objectStore = db.createObjectStore("songs", { keyPath: "id" });
+    objectStore.createIndex("playlistId", "playlistId", { unique: false });
+  }
+};
+
+// ------------------------- //
+// Save playlist + songs
+// ------------------------- //
+albumInput.addEventListener("change", (e) => {
+  const files = Array.from(e.target.files);
+
+  // unique playlist id
+  const id = Date.now().toString();
+
+  // LocalStorage ke liye playlist metadata
+  const newPlayList = files.map((file, i) => ({
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    id: `${id}-${i}`,
+  }));
+  newPlayList.push(id);
+
+  // save playlist in localStorage
+  album.push(newPlayList);
+  setLocalStorage("album", album);
+  renderAlbum(album);
+
+  // save songs in IndexedDB
+  if (db) {
+    const transaction = db.transaction("songs", "readwrite");
+    const objectStore = transaction.objectStore("songs");
+
+    files.forEach((file, i) => {
+      const songData = {
+        id: id + "-" + i,
+        playlistId: id,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        file: file, // actual File object
+      };
+
+      const request = objectStore.put(songData);
+      request.onsuccess = () => {
+        console.log("Song saved to IndexedDB:", songData.name);
+      };
+      request.onerror = (e) => {
+        console.error("Error saving song ❌", e.target.error);
+      };
+    });
+  }
+
+  // reset input
+  albumInput.value = "";
+});
+
+// ------------------------- //
+// Play Song From IndexedDB
+// ------------------------- //
+const playSongFromDB = function (songId, action) {
+  if (!db) return;
+  const transaction = db.transaction("songs", "readonly");
+  const objectStore = transaction.objectStore("songs");
+  const request = objectStore.get(songId);
+
+  request.onsuccess = (e) => {
+    const song = e.target.result;
+    if (song && song.file) {
+      // agar new song play ho raha hai to src set karo
+      if (audioPlayer.dataset.currentId !== songId) {
+        const url = URL.createObjectURL(song.file);
+        audioPlayer.src = url;
+        audioPlayer.dataset.currentId = songId; // track current song
+        currentIndex = currentPlaylist.findIndex((s) => s.id === songId);
+      }
+
+      if (action === "play") {
+        audioPlayer.play();
+      }
+    }
+  };
+
+  request.onerror = (e) => {
+    console.error("Error fetching song ❌", e.target.error);
+  };
+};
+
+// ------------------------- //
+// Render songs with play/pause
+// ------------------------- //
 function renderSongs(songs) {
-  songs.forEach((song) => {
+  musicList.innerHTML = "";
+  currentPlaylist = songs.filter((s) => typeof s === "object");
+
+  currentPlaylist.forEach((song) => {
+    const songName =
+      song.name.slice(-4) === ".mp3" ? song.name.slice(0, -4) : song.name;
     const card = `
-      <div class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-gray-700 transition-colors">
+      <div id ="${song.id}" class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-backGround transition-all">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="flex-shrink-0" height="30" fill="white">
           <path d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z" />
         </svg>
         <div class="flex-1">
-          <p class="song-name text-white truncate">${song.name}</p>
+          <p class="song-name text-white text-sm line-clamp-2">${songName}</p>
         </div>
-        <button aria-label="Play track" class="text-white text-sm hover:text-gray-300">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="25">
-            <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+        <button aria-label="Play track" data-id="${song.id}" class="play-btn text-white">
+          <!-- Pause Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" height="30" class="pause-icon hidden" fill="currentColor">
+            <path d="M176 96C149.5 96 128 117.5 128 144L128 496C128 522.5 149.5 544 176 544L240 544C266.5 544 288 522.5 288 496L288 144C288 117.5 266.5 96 240 96L176 96zM400 96C373.5 96 352 117.5 352 144L352 496C352 522.5 373.5 544 400 544L464 544C490.5 544 512 522.5 512 496L512 144C512 117.5 490.5 96 464 96L400 96z"/>
+          </svg>
+          <!-- Play Icon -->
+          <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="30">
+            <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd"/>
           </svg>
         </button>
       </div>`;
     musicList.insertAdjacentHTML("beforeend", card);
   });
+
+  // Attach play listeners (per render)
+  musicList.querySelectorAll(".play-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const songName = e.target
+        .closest(".song-card")
+        .querySelector(".song-name").textContent;
+
+      const songId = btn.dataset.id;
+      const playIcon = btn.querySelector(".play-icon");
+      const pauseIcon = btn.querySelector(".pause-icon");
+
+      // Reset all other buttons
+      resetBtn(musicList);
+
+      // toggle play/pause buttons...
+      togglePlayPause(songId, playIcon, pauseIcon);
+      currentPlayedSong.textContent = songName;
+    });
+  });
 }
+
+// ------------------------- //
 // Render one Playlist
+// ------------------------- //
 function renderAlbum(album) {
   if (album.length < 0) return;
   albumEl.innerHTML = "";
-  console.log(album);
-  album.forEach((_, i) => {
-    console.log(i + 1);
+  album.forEach((playlist, i) => {
     const card = `
-       <div class="rounded-md h-fit">
+       <div class="play-card rounded-md h-fit hover:bg-backGround p-1 transition-all duration-200" id ='${
+         playlist[playlist.length - 1]
+       }'>
           <div>
-            <img src="./assets/music-images/playlist-image.jpg" alt="Pal Pal album cover"
+            <img src="./assets/music-images/playlist-image.jpg" alt="Playlist cover"
               class="w-full object-cover rounded-md" />
           </div>
-          <div class="p-3 flex flex-col gap-3">
-            <p class="text-sm playlist-description line-clamp-2">Playlsit ${
+          <div class="p-3">
+            <p class="text-sm playlist-description line-clamp-2">Playlist ${
               i + 1
             }</p>
           </div>
@@ -118,132 +243,94 @@ function renderAlbum(album) {
   });
 }
 
+// ------------------------- //
 // Open file dialog on click
+// ------------------------- //
 addBtn.addEventListener("click", () => {
   albumInput.click();
 });
 
-// Upload handler
-albumInput.addEventListener("change", (e) => {
-  const files = Array.from(e.target.files);
-
-  // Convert files to metadata objects
-  const newPlayList = files.map((file) => ({
-    name: file.name,
-    type: file.type,
-    size: file.size,
-  }));
-  album.push(newPlayList);
-  // Get existing albums
-  setLocalStorage("album", album);
-
-  renderAlbum(album);
-
-  // let playlists = getLocalStorage("playlists");
-
-  // console.log(playlists);
-  // // Push new album (array of songs)
-  // playlists.push(newAlbum);
-
-  // // Save back
-  // setLocalStorage("playlists", playlists);
-
-  // // Render the newly added album
-  // renderAlbum(playlists);
-
-  albumInput.value = ""; // reset input so same file can be selected again
-});
-
-// Load songs on page refresh
+// ------------------------- //
+// Load albums on page refresh
+// ------------------------- //
 document.addEventListener("DOMContentLoaded", () => {
- renderAlbum(album);
+  renderAlbum(album);
 });
 
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------- //
-
-/*
-musicList.innerHTML = "";
-const creatPlayCard = function ({ name, artist }) {
-  const li = document.createElement("li");
-  li.innerHTML = `
-        <div class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-3 hover:bg-gray-700 transition-colors">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-            class="flex-shrink-0 "
-            height ='30px'
-            fill = 'white'
-          >
-            <path
-              d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z"
-            />
-          </svg>
-          <div class="flex-1 min-w-0">
-            <p class="song-name text-sm text-white truncate">${name}</p>
-            <p class="artist-name text-xs text-gray-400 truncate">${artist}</p>
-          </div>
-          <button
-            aria-label="Play track"
-            class="text-white text-sm hover:text-gray-300"
-          >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height='25'>
-             <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
-          </svg>
-
-
-          </button>
-        </div>`;
-
-  musicList.appendChild(li);
+// ------------------------- //
+// creating the song list...
+// ------------------------- //
+const createSongList = function () {
+  albumEl.addEventListener("click", function (e) {
+    const playCard = e.target.closest(".play-card");
+    if (!playCard) return;
+    album.forEach((playlist) => {
+      if (playlist[playlist.length - 1] === playCard.id) {
+        renderSongs(playlist);
+      }
+    });
+  });
 };
+createSongList();
 
-for (const song in songs) {
-  creatPlayCard(songs[song]);
-}
+///////////////////////////////////////
+// PLAYBAR CONTROLS
+///////////////////////////////////////
 
-const addRemoveClass = function (elName, addClass, removeClass) {
-  if (elName.classList.contains(addClass)) {
-    elName.classList.add(removeClass);
-    elName.classList.remove(addClass);
+// Playbar play/pause
+playPauseBtn.addEventListener("click", () => {
+  if (audioPlayer.paused) {
+    audioPlayer.play();
+    playIconPlaybar.classList.add("hidden");
+    pauseIconPlaybar.classList.remove("hidden");
   } else {
-    elName.classList.remove(removeClass);
-    elName.classList.add(addClass);
+    audioPlayer.pause();
+    playIconPlaybar.classList.remove("hidden");
+    pauseIconPlaybar.classList.add("hidden");
   }
-};
-
-const playBtn = document.querySelectorAll(".play-icon");
-const playBtnPlaybar = document.querySelector("#play-icon-playbar");
-
-const songCard = document.querySelectorAll(".song-card");
-const currentPlayedSong = document.querySelector("#current-playedSong");
-songCard.forEach((song) => {
-  song.addEventListener("click", () => {
-    const songName = song.querySelector(".song-name");
-    console.log(currentPlayedSong.textContent);
-    currentPlayedSong.textContent = songName.textContent;
-    playBtnPlaybar.classList.remove("fa-circle-play");
-    playBtnPlaybar.classList.add("fa-circle-pause");
-  });
 });
 
-// ---------------------------- //
-
-// Adding clciking the play button functionlity...
-playBtnPlaybar.addEventListener("click", () => {
-  addRemoveClass(playBtnPlaybar, "fa-circle-play", "fa-circle-pause");
+// Previous button
+prevBtn.addEventListener("click", () => {
+  if (currentIndex > 0) {
+    currentIndex--;
+    playSongFromDB(currentPlaylist[currentIndex].id, "play");
+    currentPlayedSong.textContent = currentPlaylist[currentIndex].name;
+    resetBtn(musicList);
+  }
 });
-console.log(playBtnPlaybar);
 
-playBtn.forEach((e) => {
-  e.addEventListener("click", () => {
-    addRemoveClass(e, "fa-circle-pause", "fa-circle-play");
-    if (e.classList.contains("fa-circle-pause")) {
-      e.classList.add("animate-rotate");
-    } else {
-      e.classList.remove("animate-rotate");
-    }
-  });
+// Next button
+nextBtn.addEventListener("click", () => {
+  if (currentIndex < currentPlaylist.length - 1) {
+    currentIndex++;
+    playSongFromDB(currentPlaylist[currentIndex].id, "play");
+    currentPlayedSong.textContent = currentPlaylist[currentIndex].name;
+    resetBtn(musicList);
+  }
 });
- */
+
+// Progress bar update
+audioPlayer.addEventListener("timeupdate", () => {
+  if (!audioPlayer.duration) return;
+  progressBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+  console.log(progressBar.value);
+
+  const cur = formatTime(audioPlayer.currentTime);
+  const dur = formatTime(audioPlayer.duration);
+  durationEl.textContent = `${cur} / ${dur}`;
+});
+
+// Seek on progress bar input
+progressBar.addEventListener("input", () => {
+  if (audioPlayer.duration) {
+    audioPlayer.currentTime = (progressBar.value / 100) * audioPlayer.duration;
+  }
+});
+
+// Helper: format seconds → mm:ss
+function formatTime(sec) {
+  const m = Math.floor(sec / 60) || 0;
+  const s = Math.floor(sec % 60) || 0;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}

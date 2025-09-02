@@ -3,8 +3,11 @@ module.exports = {
   content: ["./public/*.html"],
   theme: {
     extend: {
+      screens: {
+        "3xl": "1920px",
+      },
       backgroundColor: {
-        backGround: "#161719",
+        backGround: "rgba(255,255,255,0.1)",
         header: "#121212",
       },
       fontFamily: {
@@ -19,6 +22,7 @@ module.exports = {
           "100%": { transform: "rotate(360deg)" },
         },
       },
+      width: { slider: "500px" },
     },
   },
   plugins: [
