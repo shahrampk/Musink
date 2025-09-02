@@ -176,43 +176,37 @@ function renderSongs(songs) {
     const songName =
       song.name.slice(-4) === ".mp3" ? song.name.slice(0, -4) : song.name;
     const card = `
-      <div id ="${song.id}" class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-backGround transition-all">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="flex-shrink-0" height="30" fill="white">
+      <div id ="${song.id}" 
+        class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-backGround transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" 
+          class="flex-shrink-0" height="30" fill="white">
           <path d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z" />
         </svg>
         <div class="flex-1">
           <p class="song-name text-white text-sm line-clamp-2">${songName}</p>
         </div>
-        <button aria-label="Play track" data-id="${song.id}" class="play-btn text-white">
-          <!-- Pause Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" height="30" class="pause-icon hidden" fill="currentColor">
-            <path d="M176 96C149.5 96 128 117.5 128 144L128 496C128 522.5 149.5 544 176 544L240 544C266.5 544 288 522.5 288 496L288 144C288 117.5 266.5 96 240 96L176 96zM400 96C373.5 96 352 117.5 352 144L352 496C352 522.5 373.5 544 400 544L464 544C490.5 544 512 522.5 512 496L512 144C512 117.5 490.5 96 464 96L400 96z"/>
-          </svg>
-          <!-- Play Icon -->
-          <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="30">
-            <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd"/>
-          </svg>
-        </button>
       </div>`;
     musicList.insertAdjacentHTML("beforeend", card);
   });
 
-  // Attach play listeners (per render)
-  musicList.querySelectorAll(".play-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const songName = e.target
-        .closest(".song-card")
-        .querySelector(".song-name").textContent;
+  // Attach click listener on song-card
+  musicList.querySelectorAll(".song-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const songId = card.id;
+      const songName = card.querySelector(".song-name").textContent;
 
-      const songId = btn.dataset.id;
-      const playIcon = btn.querySelector(".play-icon");
-      const pauseIcon = btn.querySelector(".pause-icon");
+      if (audioPlayer.dataset.currentId === songId && !audioPlayer.paused) {
+        // Agar wahi song play ho raha hai to pause karo
+        audioPlayer.pause();
+        playIconPlaybar.classList.remove("hidden");
+        pauseIconPlaybar.classList.add("hidden");
+      } else {
+        // Naya song ya resume play
+        playSongFromDB(songId, "play");
+        playIconPlaybar.classList.add("hidden");
+        pauseIconPlaybar.classList.remove("hidden");
+      }
 
-      // Reset all other buttons
-      resetBtn(musicList);
-
-      // toggle play/pause buttons...
-      togglePlayPause(songId, playIcon, pauseIcon);
       currentPlayedSong.textContent = songName;
     });
   });
@@ -277,16 +271,32 @@ createSongList();
 // PLAYBAR CONTROLS
 ///////////////////////////////////////
 
-// Playbar play/pause
-playPauseBtn.addEventListener("click", () => {
-  if (audioPlayer.paused) {
-    audioPlayer.play();
-    playIconPlaybar.classList.add("hidden");
-    pauseIconPlaybar.classList.remove("hidden");
-  } else {
-    audioPlayer.pause();
-    playIconPlaybar.classList.remove("hidden");
-    pauseIconPlaybar.classList.add("hidden");
+// Common play/pause toggle function
+function togglePlayPauseBar() {
+  if (audioPlayer.src) {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      playIconPlaybar.classList.add("hidden");
+      pauseIconPlaybar.classList.remove("hidden");
+    } else {
+      audioPlayer.pause();
+      playIconPlaybar.classList.remove("hidden");
+      pauseIconPlaybar.classList.add("hidden");
+    }
+    return;
+  }
+  alert("Audio is not select! Please select...");
+}
+
+// Button click se
+playPauseBtn.addEventListener("click", togglePlayPauseBar);
+
+// Keyboard se (Space ya Enter)
+document.addEventListener("keydown", (e) => {
+  // prevent scrolling on space
+  if (e.code === "Space" || e.code === "Enter") {
+    e.preventDefault();
+    togglePlayPauseBar();
   }
 });
 
