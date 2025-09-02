@@ -224,7 +224,7 @@ function renderAlbum(album) {
          playlist[playlist.length - 1]
        }'>
           <div>
-            <img src="../playlist-image.jpg" alt="Playlist cover"
+            <img src="./playlist-image.jpg" alt="Playlist cover"
               class="w-full object-cover rounded-md" />
           </div>
           <div class="p-3">
@@ -324,8 +324,6 @@ nextBtn.addEventListener("click", () => {
 audioPlayer.addEventListener("timeupdate", () => {
   if (!audioPlayer.duration) return;
   progressBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-  console.log(progressBar.value);
-
   const cur = formatTime(audioPlayer.currentTime);
   const dur = formatTime(audioPlayer.duration);
   durationEl.textContent = `${cur} / ${dur}`;
