@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./public/*.html"],
+  content: ["./public/**/*.{html,js}"],
   theme: {
     extend: {
       screens: {
@@ -23,6 +23,9 @@ module.exports = {
         },
       },
       width: { slider: "500px" },
+      fontSize: {
+        none: "0px",
+      },
     },
   },
   plugins: [
