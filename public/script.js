@@ -12,6 +12,9 @@ const volumeBtnContainer = document.querySelector(".volumn__control_btn");
 const addBtn = document.getElementById("add-playlist");
 const albumInput = document.getElementById("albumInput");
 const albumEl = document.getElementById("album");
+const aside = document.querySelector("aside");
+console.log(aside);
+
 albumEl.innerHTML = "";
 
 ///////////////////////////////////////
@@ -40,6 +43,15 @@ const togglePlayPause = function (songId, playIcon, pauseIcon) {
     playIconPlaybar.classList.add("hidden");
     pauseIconPlaybar.classList.remove("hidden");
   }
+};
+
+// toggleClasses...
+const toggleClasses = (el, add = [], remove = []) => {
+  if (!el) return;
+  console.log(add, el);
+  if (add.length) el.classList.add(...add);
+
+  if (remove.length) el.classList.remove(...remove);
 };
 
 // Save to localStorage
@@ -225,22 +237,47 @@ function renderAlbum(album) {
   albumEl.innerHTML = "";
   album.forEach((playlist, i) => {
     const card = `
-       <div class="play-card rounded-md h-fit hover:bg-backGround p-1 transition-all duration-200" id ='${
-         playlist[playlist.length - 1]
-       }'>
-          <div>
-            <img src="../public/assets/playlist-image.jpg" alt="Playlist cover"
-              class="w-full object-cover rounded-md" />
-          </div>
-          <div class="p-3">
-            <p class="text-sm playlist-description line-clamp-2">Playlist ${
-              i + 1
-            }</p>
-          </div>
-        </div>`;
+       
+<div class="relative play-card rounded-md h-fit cursor-pointer bg-backGround p-1 transition-all duration-200 group" id='${
+      playlist[playlist.length - 1]
+    }'>
+  <div>
+  </div>
+  
+  <div class="sm:block hidden">
+  <img src="../public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
+  </div>
+  
+  <div class="p-3 flex justify-between items-center">
+  <p class="text-sm playlist-description line-clamp-2">Playlist ${i + 1}</p>
+  <div class="delete-btn w-fit md:absolute  top-4 right-4 transition-all duration-500 bg-red-800 p-1 rounded flex justify-center items-center cursor-pointer opacity-0 group-hover:opacity-100 group/delete">
+    <!-- delete text -->
+    <p class="text-sm opacity-0 transition-all duration-200 group-hover/delete:opacity-100 group-hover/delete:text-sm text-none">Delete</p>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="20">
+      <path fill-rule="evenodd"
+        d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
+        clip-rule="evenodd" />
+    </svg>
+  </div>
+  </div>
+</div>
+`;
     albumEl.insertAdjacentHTML("beforeend", card);
   });
 }
+
+albumEl.addEventListener("click", function (e) {
+  const target = e.target.closest(".play-card");
+  if (!target) return;
+  console.log(target);
+
+  if (aside.classList.contains("hidden")) {
+    // aside.classList.remove("hidden");
+    // aside.classList.add("");
+    toggleClasses(aside, ['absolute", "z-50'], "hidden");
+  }
+  // if (!aside.classList.contains("hidden")) aside.classList.add("hidden");
+});
 
 // ------------------------- //
 // Open file dialog on click
@@ -264,7 +301,10 @@ const createSongList = function () {
     const playCard = e.target.closest(".play-card");
     if (!playCard) return;
     album.forEach((playlist) => {
-      if (playlist[playlist.length - 1] === playCard.id) {
+      if (
+        playlist[playlist.length - 1] === playCard.id &&
+        !e.target.closest(".delete-btn")
+      ) {
         renderSongs(playlist);
       }
     });
@@ -275,6 +315,12 @@ createSongList();
 ///////////////////////////////////////
 // PLAYBAR CONTROLS
 ///////////////////////////////////////
+// Helper: format seconds → mm:ss
+function formatTime(sec) {
+  const m = Math.floor(sec / 60) || 0;
+  const s = Math.floor(sec % 60) || 0;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
 
 // Common play/pause toggle function
 function togglePlayPauseBar() {
@@ -321,6 +367,8 @@ nextBtn.addEventListener("click", () => {
     currentIndex++;
     playSongFromDB(currentPlaylist[currentIndex].id, "play");
     currentPlayedSong.textContent = currentPlaylist[currentIndex].name;
+    console.log(currentPlaylist);
+
     resetBtn(musicList);
   }
 });
@@ -338,7 +386,6 @@ audioPlayer.addEventListener("timeupdate", () => {
 progressBar.addEventListener("input", () => {
   if (audioPlayer.duration) {
     audioPlayer.currentTime = (progressBar.value / 100) * audioPlayer.duration;
-    console.log((audioPlayer.volume = Math.random()));
   }
 });
 const volumeBtns = function (btn) {
@@ -382,17 +429,52 @@ volume.addEventListener("input", () => {
   audioPlayer.volume = volume.value / 100;
   if (audioPlayer.volume === 0)
     volumeBtnContainer.innerHTML = volumeBtns("mute");
-  if (audioPlayer.volume > 0.1)
+
+  if (audioPlayer.volume > 0 && audioPlayer.volume < 0.5)
     volumeBtnContainer.innerHTML = volumeBtns("low");
-  if (audioPlayer.volume > 0.6)
+
+  if (audioPlayer.volume > 0.5 && audioPlayer.volume < 1)
     volumeBtnContainer.innerHTML = volumeBtns("medium");
+
   if (audioPlayer.volume === 1)
     volumeBtnContainer.innerHTML = volumeBtns("full");
 });
+// Deleting a Playlist...
+albumEl.addEventListener("click", (e) => {
+  const deleteBtn = e.target.closest(".delete-btn");
+  if (!deleteBtn) return;
 
-// Helper: format seconds → mm:ss
-function formatTime(sec) {
-  const m = Math.floor(sec / 60) || 0;
-  const s = Math.floor(sec % 60) || 0;
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
+  const id = deleteBtn.closest(".play-card").id; // playlistId
+  console.log("Deleting playlist:", id);
+
+  // 1) LocalStorage se delete
+  const index = album.findIndex(
+    (playlist) => playlist[playlist.length - 1] === id
+  );
+  if (index > -1) {
+    album.splice(index, 1);
+    setLocalStorage("album", album);
+    renderAlbum(album);
+  }
+
+  // 2) IndexedDB se delete
+  if (db) {
+    const transaction = db.transaction("songs", "readwrite");
+    const objectStore = transaction.objectStore("songs");
+    const indexStore = objectStore.index("playlistId");
+    const request = indexStore.openCursor(IDBKeyRange.only(id));
+
+    request.onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (cursor) {
+        objectStore.delete(cursor.primaryKey); // ✅ delete song
+        console.log("Deleted song from DB:", cursor.value.name);
+        cursor.continue();
+      }
+    };
+
+    request.onerror = (e) => {
+      console.error("Error deleting songs ❌", e.target.error);
+    };
+  }
+});
