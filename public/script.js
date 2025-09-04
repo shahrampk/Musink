@@ -345,6 +345,9 @@ hamBurger.addEventListener("click", () => {
 // ------------------------- //
 // Open file dialog on click
 // ------------------------- //
+playlistModal.addEventListener("click", (e) => {
+  if (!e.target.closest(".lable-box")) playlistModal.classList.add("hidden");
+});
 addBtn.addEventListener("click", () => {
   playlistModal.classList.remove("hidden");
   toggleClasses(playlistModal, ["flex"], ["hidden"]);
@@ -352,9 +355,6 @@ addBtn.addEventListener("click", () => {
 });
 addPlaylistBtn.addEventListener("click", (e) => {
   e.preventDefault();
-
-  const value = playlistName.value;
-  console.log(value);
   albumInput.click();
 });
 // ------------------------- //
