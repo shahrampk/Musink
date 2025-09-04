@@ -250,7 +250,7 @@ function renderAlbum(album) {
   <div></div>
 
   <div class="sm:block hidden">
-    <img src="/public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
+    <img src="./public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
   </div>
 
   <div class="p-3 flex justify-between items-center">
