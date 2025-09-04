@@ -21,6 +21,8 @@ const mainApp = document.querySelector("#main-app");
 const playlistModal = document.querySelector("#playlist-modal");
 const playlistName = playlistModal.querySelector("#playlist-name");
 const addPlaylistBtn = playlistModal.querySelector("button");
+const alertBox = document.querySelector(".alert");
+const alertMsg = document.querySelector(".alert-msg");
 albumEl.innerHTML = "";
 
 ///////////////////////////////////////
@@ -49,6 +51,15 @@ const togglePlayPause = function (songId, playIcon, pauseIcon) {
     playIconPlaybar.classList.add("hidden");
     pauseIconPlaybar.classList.remove("hidden");
   }
+};
+
+const showMsg = function (msg, timeout = 1200) {
+  if (!alertBox || !alertMsg) return;
+  alertBox.classList.remove("hidden");
+  alertMsg.textContent = msg;
+  setTimeout(() => {
+    alertBox.classList.add("hidden");
+  }, timeout);
 };
 
 // toggleClasses...
@@ -388,7 +399,7 @@ function togglePlayPauseBar() {
     }
     return;
   }
-  alert("Audio is not select! Please select...");
+  showMsg("Audio did't found! Please select...", 2000);
 }
 
 // Button click se
@@ -417,15 +428,16 @@ prevBtn.addEventListener("click", () => {
 });
 
 // Next button
-nextBtn.addEventListener("click", () => {
+const nextSong = () => {
   if (currentIndex < currentPlaylist.length - 1) {
     currentIndex++;
     playSongFromDB(currentPlaylist[currentIndex].id, "play");
     currentPlayedSong.textContent = currentPlaylist[currentIndex].name;
     resetBtn(musicList);
   }
-});
-
+};
+nextBtn.addEventListener("click", nextSong);
+audioPlayer.addEventListener("ended", nextSong);
 // Progress bar update
 audioPlayer.addEventListener("timeupdate", () => {
   if (!audioPlayer.duration) return;
@@ -492,7 +504,6 @@ const selectBtn = function () {
 // Volume progress
 volume.addEventListener("input", () => {
   audioPlayer.volume = volume.value / 100;
-
   selectBtn();
 });
 
@@ -503,6 +514,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowDown") {
     audioPlayer.volume = Math.max(audioPlayer.volume - 0.1, 0);
   }
+  volume.value = audioPlayer.volume * 100;
   selectBtn();
 });
 

@@ -16,11 +16,31 @@ module.exports = {
       },
       animation: {
         rotate: "rotate 1.5s infinite linear ",
+        showMsg: "showmsg 2s ease-in-out forwards",
       },
       keyframes: {
         rotate: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
+        },
+        showmsg: {
+          "0%": {
+            opacity: "0",
+            transform: 'translateX("10px")',
+          },
+
+          "20%": {
+            opacity: "1",
+            transform: 'translateX("0px")',
+          },
+          "80%": {
+            opacity: "0",
+            transform: 'translateX("10px")',
+          },
+          "100%": {
+            opacity: "0",
+            visibility: "hidden",
+          },
         },
       },
       width: { slider: "500px" },
