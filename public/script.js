@@ -18,6 +18,9 @@ const mobileAside = document.querySelector("#mobile-aside");
 const hamBurger = document.querySelector("#hamburger-menu");
 const xMark = document.querySelector(".X-mark");
 const mainApp = document.querySelector("#main-app");
+const playlistModal = document.querySelector("#playlist-modal");
+const playlistName = playlistModal.querySelector("#playlist-name");
+const addPlaylistBtn = playlistModal.querySelector("button");
 albumEl.innerHTML = "";
 
 ///////////////////////////////////////
@@ -113,11 +116,12 @@ albumInput.addEventListener("change", (e) => {
     id: `${id}-${i}`,
   }));
   newPlayList.push(id);
-
+  newPlayList.push(playlistName.value);
   // save playlist in localStorage
   album.push(newPlayList);
   setLocalStorage("album", album);
   renderAlbum(album);
+  playlistName.value = "";
 
   // save songs in IndexedDB
   if (db) {
@@ -141,7 +145,7 @@ albumInput.addEventListener("change", (e) => {
       };
     });
   }
-
+  toggleClasses(playlistModal, ["hidden"], ["flex"]);
   // reset input
   albumInput.value = "";
 });
@@ -242,6 +246,8 @@ function renderAlbum(album) {
   if (album.length < 0) return;
   albumEl.innerHTML = "";
   album.forEach((playlist, i) => {
+    console.log(playlist);
+
     const card = `
        
 <div class="relative play-card rounded-md h-fit cursor-pointer bg-backGround p-1 transition-all duration-200 group" id='${
@@ -254,7 +260,9 @@ function renderAlbum(album) {
   </div>
 
   <div class="p-3 flex justify-between items-center">
-    <p class="text-sm playlist-description line-clamp-2">Playlist ${i + 1}</p>
+    <p class="text-sm playlist-description line-clamp-2">${
+      playlist[playlist.length - 1]
+    }</p>
     
     <!-- delete-btn: hidden by default, visible on card hover -->
     <div class="delete-btn w-fit md:absolute top-4 right-4 transition-all duration-500 bg-red-800 p-1 pl-0 rounded flex justify-center items-center cursor-pointer opacity-0 group-hover:opacity-100 group/delete">
@@ -338,9 +346,17 @@ hamBurger.addEventListener("click", () => {
 // Open file dialog on click
 // ------------------------- //
 addBtn.addEventListener("click", () => {
+  playlistModal.classList.remove("hidden");
+  toggleClasses(playlistModal, ["flex"], ["hidden"]);
+  playlistName.focus();
+});
+addPlaylistBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const value = playlistName.value;
+  console.log(value);
   albumInput.click();
 });
-
 // ------------------------- //
 // Load albums on page refresh
 // ------------------------- //
@@ -381,7 +397,10 @@ playPauseBtn.addEventListener("click", togglePlayPauseBar);
 // Keyboard se (Space ya Enter)
 document.addEventListener("keydown", (e) => {
   // prevent scrolling on space
-  if (e.code === "Space" || e.code === "Enter") {
+  if (
+    (e.code === "Space" || e.code === "Enter") &&
+    playlistModal.classList.contains("hidden")
+  ) {
     e.preventDefault();
     togglePlayPauseBar();
   }
@@ -459,6 +478,8 @@ const volumeBtns = function (btn) {
 };
 
 const selectBtn = function () {
+  if (audioPlayer.volume === 0)
+    volumeBtnContainer.innerHTML = volumeBtns("mute");
   if (audioPlayer.volume > 0 && audioPlayer.volume < 0.5)
     volumeBtnContainer.innerHTML = volumeBtns("low");
 
@@ -471,8 +492,7 @@ const selectBtn = function () {
 // Volume progress
 volume.addEventListener("input", () => {
   audioPlayer.volume = volume.value / 100;
-  if (audioPlayer.volume === 0)
-    volumeBtnContainer.innerHTML = volumeBtns("mute");
+
   selectBtn();
 });
 
