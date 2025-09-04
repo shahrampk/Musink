@@ -18,8 +18,6 @@ const mobileAside = document.querySelector("#mobile-aside");
 const hamBurger = document.querySelector("#hamburger-menu");
 const xMark = document.querySelector(".X-mark");
 const mainApp = document.querySelector("#main-app");
-console.log(aside);
-
 albumEl.innerHTML = "";
 
 ///////////////////////////////////////
@@ -53,7 +51,6 @@ const togglePlayPause = function (songId, playIcon, pauseIcon) {
 // toggleClasses...
 const toggleClasses = (el, add = [], remove = []) => {
   if (!el) return;
-  console.log(add, el);
   if (add.length) el.classList.add(...add);
 
   if (remove.length) el.classList.remove(...remove);
@@ -85,7 +82,6 @@ const openRequest = indexedDB.open("music-app", 1);
 
 openRequest.onsuccess = () => {
   db = openRequest.result;
-  console.log("IndexedDB connected ✅");
 };
 
 openRequest.onerror = (e) => {
@@ -139,9 +135,7 @@ albumInput.addEventListener("change", (e) => {
       };
 
       const request = objectStore.put(songData);
-      request.onsuccess = () => {
-        console.log("Song saved to IndexedDB:", songData.name);
-      };
+      request.onsuccess = () => {};
       request.onerror = (e) => {
         console.error("Error saving song ❌", e.target.error);
       };
@@ -307,8 +301,6 @@ createSongList();
 albumEl.addEventListener("click", function (e) {
   const target = e.target.closest(".play-card");
   if (!target) return;
-  console.log(target);
-
   if (aside.classList.contains("hidden")) {
     // aside.classList.remove("hidden");
     // aside.classList.add("");
@@ -411,8 +403,6 @@ nextBtn.addEventListener("click", () => {
     currentIndex++;
     playSongFromDB(currentPlaylist[currentIndex].id, "play");
     currentPlayedSong.textContent = currentPlaylist[currentIndex].name;
-    console.log(currentPlaylist);
-
     resetBtn(musicList);
   }
 });
@@ -468,12 +458,7 @@ const volumeBtns = function (btn) {
         `;
 };
 
-// Volume progress
-volume.addEventListener("input", () => {
-  audioPlayer.volume = volume.value / 100;
-  if (audioPlayer.volume === 0)
-    volumeBtnContainer.innerHTML = volumeBtns("mute");
-
+const selectBtn = function () {
   if (audioPlayer.volume > 0 && audioPlayer.volume < 0.5)
     volumeBtnContainer.innerHTML = volumeBtns("low");
 
@@ -482,15 +467,31 @@ volume.addEventListener("input", () => {
 
   if (audioPlayer.volume === 1)
     volumeBtnContainer.innerHTML = volumeBtns("full");
+};
+// Volume progress
+volume.addEventListener("input", () => {
+  audioPlayer.volume = volume.value / 100;
+  if (audioPlayer.volume === 0)
+    volumeBtnContainer.innerHTML = volumeBtns("mute");
+  selectBtn();
 });
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowUp") {
+    audioPlayer.volume = Math.min(audioPlayer.volume + 0.1, 1);
+  }
+  if (e.key === "ArrowDown") {
+    audioPlayer.volume = Math.max(audioPlayer.volume - 0.1, 0);
+  }
+  selectBtn();
+});
+
 // Deleting a Playlist...
 albumEl.addEventListener("click", (e) => {
   const deleteBtn = e.target.closest(".delete-btn");
   if (!deleteBtn) return;
 
   const id = deleteBtn.closest(".play-card").id; // playlistId
-  console.log("Deleting playlist:", id);
-
   // 1) LocalStorage se delete
   const index = album.findIndex(
     (playlist) => playlist[playlist.length - 1] === id
@@ -512,7 +513,6 @@ albumEl.addEventListener("click", (e) => {
       const cursor = event.target.result;
       if (cursor) {
         objectStore.delete(cursor.primaryKey); // ✅ delete song
-        console.log("Deleted song from DB:", cursor.value.name);
         cursor.continue();
       }
     };

@@ -166,10 +166,10 @@
           </div>
           <!-- Volume/Duration Controls -->
           <div
-            class="grid grid-cols-5 col-span-2 sm:col-start-7  md:col-start-9 md:-col-end-1 justify-center lg:justify-end items-center gap-2">
+            class="grid grid-cols-5 col-span-2 sm:col-start-7  md:col-start-9 md:-col-end-1 justify-center sm:justify-end items-center gap-2">
             <!-- Volume Controls -->
             <div
-              class="col-span-3 relative volumn__control_box sm:flex sm:flex-col-reverse lg:flex-row justify-end items-center gap-2 group w-full md:justify-self-end hidden ">
+              class="col-span-2 md:col-span-3 relative volumn__control_box sx:flex sx:flex-col-reverse lg:flex-row justify-end items-center gap-2 group w-full md:justify-self-end hidden ">
               <div class="volumn__control_btn  mx-4 ">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" height='30' fill="currentColor">
                   <path
@@ -182,7 +182,8 @@
                 id="volumn_control">
             </div>
             <!-- Duration -->
-            <div class=" col-span-full sm:col-span-2 flex justify-end items-center gap-2 md:justify-self-end">
+            <div
+              class="col-span-full sx:col-span-3 md:col-span-2 flex justify-end items-center gap-2 md:justify-self-end">
               <p id="duration" class="md:text-lg font-medium sm:inline-block text-sm">00:00/00:00</p>
             </div>
           </div>
