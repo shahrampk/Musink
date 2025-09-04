@@ -1,3 +1,4 @@
+const mobileMusicList = document.querySelector("#mobile-song-playlist");
 const musicList = document.querySelector("#song-playlist");
 const playIconPlaybar = document.querySelector("#play-icon-playbar");
 const pauseIconPlaybar = document.querySelector("#pause-icon-playbar");
@@ -12,7 +13,11 @@ const volumeBtnContainer = document.querySelector(".volumn__control_btn");
 const addBtn = document.getElementById("add-playlist");
 const albumInput = document.getElementById("albumInput");
 const albumEl = document.getElementById("album");
-const aside = document.querySelector("aside");
+const aside = document.querySelector("#desktop-aside");
+const mobileAside = document.querySelector("#mobile-aside");
+const hamBurger = document.querySelector("#hamburger-menu");
+const xMark = document.querySelector(".X-mark");
+const mainApp = document.querySelector("#main-app");
 console.log(aside);
 
 albumEl.innerHTML = "";
@@ -183,6 +188,8 @@ const playSongFromDB = function (songId, action) {
 // ------------------------- //
 function renderSongs(songs) {
   musicList.innerHTML = "";
+  mobileMusicList.innerHTML = "";
+
   currentPlaylist = songs.filter((s) => typeof s === "object");
 
   currentPlaylist.forEach((song) => {
@@ -190,12 +197,9 @@ function renderSongs(songs) {
       song.name.slice(-4) === ".mp3" ? song.name.slice(0, -4) : song.name;
     const card = `
       <div id ="${song.id}" 
-        class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-backGround transition-all">
+        class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-backGround transition-all mb-2">
         <div class="w-30">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" 
-          class="flex-shrink-0" height="30" fill="white">
-          <path d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7l0 72 0 264c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L448 147 192 223.8 192 432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6L128 200l0-72c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z" />
-        </svg>
+          🎵
         </div>
         <div class="flex-1">
           <p class="song-name text-white text-sm line-clamp-2">${
@@ -203,22 +207,30 @@ function renderSongs(songs) {
           }</p>
         </div>
       </div>`;
-    musicList.insertAdjacentHTML("beforeend", card);
+
+    if (window.innerWidth >= 990) {
+      musicList.insertAdjacentHTML("beforeend", card);
+    } else {
+      mobileMusicList.insertAdjacentHTML("beforeend", card);
+      mobileAside.classList.remove("translate-x-aside-closed");
+      mobileAside.classList.add("shadow-aside");
+    }
   });
 
-  // Attach click listener on song-card
-  musicList.querySelectorAll(".song-card").forEach((card) => {
+  // Ab dono lists ke liye listener lagao
+  [
+    ...musicList.querySelectorAll(".song-card"),
+    ...mobileMusicList.querySelectorAll(".song-card"),
+  ].forEach((card) => {
     card.addEventListener("click", () => {
       const songId = card.id;
       const songName = card.querySelector(".song-name").textContent;
 
       if (audioPlayer.dataset.currentId === songId && !audioPlayer.paused) {
-        // Agar wahi song play ho raha hai to pause karo
         audioPlayer.pause();
         playIconPlaybar.classList.remove("hidden");
         pauseIconPlaybar.classList.add("hidden");
       } else {
-        // Naya song ya resume play
         playSongFromDB(songId, "play");
         playIconPlaybar.classList.add("hidden");
         pauseIconPlaybar.classList.remove("hidden");
@@ -241,57 +253,37 @@ function renderAlbum(album) {
 <div class="relative play-card rounded-md h-fit cursor-pointer bg-backGround p-1 transition-all duration-200 group" id='${
       playlist[playlist.length - 1]
     }'>
-  <div>
-  </div>
-  
+  <div></div>
+
   <div class="sm:block hidden">
-  <img src="../public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
+    <img src="/public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
   </div>
-  
+
   <div class="p-3 flex justify-between items-center">
-  <p class="text-sm playlist-description line-clamp-2">Playlist ${i + 1}</p>
-  <div class="delete-btn w-fit md:absolute  top-4 right-4 transition-all duration-500 bg-red-800 p-1 rounded flex justify-center items-center cursor-pointer opacity-0 group-hover:opacity-100 group/delete">
-    <!-- delete text -->
-    <p class="text-sm opacity-0 transition-all duration-200 group-hover/delete:opacity-100 group-hover/delete:text-sm text-none">Delete</p>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="20">
-      <path fill-rule="evenodd"
-        d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
-        clip-rule="evenodd" />
-    </svg>
-  </div>
+    <p class="text-sm playlist-description line-clamp-2">Playlist ${i + 1}</p>
+    
+    <!-- delete-btn: hidden by default, visible on card hover -->
+    <div class="delete-btn w-fit md:absolute top-4 right-4 transition-all duration-500 bg-red-800 p-1 pl-0 rounded flex justify-center items-center cursor-pointer opacity-0 group-hover:opacity-100 group/delete">
+      
+      <!-- delete text: hidden by default, visible on icon hover -->
+      <p class=" opacity-0 transition-all duration-200 group-hover/delete:opacity-100 group-hover/delete:text-sm text-none ml-1">
+        Delete
+      </p>
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="20">
+        <path fill-rule="evenodd"
+          d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
+          clip-rule="evenodd" />
+      </svg>
+    </div>
   </div>
 </div>
+
+
 `;
     albumEl.insertAdjacentHTML("beforeend", card);
   });
 }
-
-albumEl.addEventListener("click", function (e) {
-  const target = e.target.closest(".play-card");
-  if (!target) return;
-  console.log(target);
-
-  if (aside.classList.contains("hidden")) {
-    // aside.classList.remove("hidden");
-    // aside.classList.add("");
-    toggleClasses(aside, ['absolute", "z-50'], "hidden");
-  }
-  // if (!aside.classList.contains("hidden")) aside.classList.add("hidden");
-});
-
-// ------------------------- //
-// Open file dialog on click
-// ------------------------- //
-addBtn.addEventListener("click", () => {
-  albumInput.click();
-});
-
-// ------------------------- //
-// Load albums on page refresh
-// ------------------------- //
-document.addEventListener("DOMContentLoaded", () => {
-  renderAlbum(album);
-});
 
 // ------------------------- //
 // creating the song list...
@@ -311,6 +303,58 @@ const createSongList = function () {
   });
 };
 createSongList();
+
+albumEl.addEventListener("click", function (e) {
+  const target = e.target.closest(".play-card");
+  if (!target) return;
+  console.log(target);
+
+  if (aside.classList.contains("hidden")) {
+    // aside.classList.remove("hidden");
+    // aside.classList.add("");
+    toggleClasses(aside, "w-1/3", "w-0");
+  }
+  // if (!aside.classList.contains("hidden")) aside.classList.add("hidden");
+});
+
+// ------------------------- //
+// Hamburger Menu //
+// ------------------------- //
+document.addEventListener("keydown", function (e) {
+  if (
+    e.key === "Escape" &&
+    !mobileAside.classList.contains("translate-x-aside-closed")
+  )
+    mobileAside.classList.add("translate-x-aside-closed");
+  mobileAside.classList.remove("shadow-aside");
+});
+xMark.addEventListener("click", function (e) {
+  if (!mobileAside.classList.contains("translate-x-aside-closed"))
+    mobileAside.classList.add("translate-x-aside-closed");
+  mobileAside.classList.remove("shadow-aside");
+});
+hamBurger.addEventListener("click", () => {
+  // Agar aside already hidden hai to open karo
+  if (mobileAside.classList.contains("translate-x-aside-closed")) {
+    mobileAside.classList.remove("translate-x-aside-closed");
+    mobileAside.classList.add("shadow-aside");
+  }
+});
+// END...
+
+// ------------------------- //
+// Open file dialog on click
+// ------------------------- //
+addBtn.addEventListener("click", () => {
+  albumInput.click();
+});
+
+// ------------------------- //
+// Load albums on page refresh
+// ------------------------- //
+document.addEventListener("DOMContentLoaded", () => {
+  renderAlbum(album);
+});
 
 ///////////////////////////////////////
 // PLAYBAR CONTROLS

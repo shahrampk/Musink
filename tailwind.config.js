@@ -26,6 +26,13 @@ module.exports = {
       fontSize: {
         none: "0px",
       },
+      boxShadow: {
+        aside: "3px 4px 20px 8px rgba(0, 0, 0, 0.4)",
+      },
+      translate: {
+        "aside-closed": "-105%",
+        "aside-open": "105%",
+      },
     },
   },
   plugins: [
