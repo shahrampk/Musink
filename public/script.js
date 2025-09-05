@@ -37,21 +37,21 @@ const resetBtn = function (musicList) {
 };
 
 // Toggle play / pause per song
-const togglePlayPause = function (songId, playIcon, pauseIcon) {
-  if (audioPlayer.dataset.currentId === songId && !audioPlayer.paused) {
-    audioPlayer.pause();
-    playIcon.classList.remove("hidden");
-    pauseIcon.classList.add("hidden");
-    playIconPlaybar.classList.remove("hidden");
-    pauseIconPlaybar.classList.add("hidden");
-  } else {
-    playSongFromDB(songId, "play");
-    playIcon.classList.add("hidden");
-    pauseIcon.classList.remove("hidden");
-    playIconPlaybar.classList.add("hidden");
-    pauseIconPlaybar.classList.remove("hidden");
-  }
-};
+// const togglePlayPause = function (songId, playIcon, pauseIcon) {
+//   if (audioPlayer.dataset.currentId === songId && !audioPlayer.paused) {
+//     audioPlayer.pause();
+//     playIcon.classList.remove("hidden");
+//     pauseIcon.classList.add("hidden");
+//     playIconPlaybar.classList.remove("hidden");
+//     pauseIconPlaybar.classList.add("hidden");
+//   } else {
+//     playSongFromDB(songId, "play");
+//     playIcon.classList.add("hidden");
+//     pauseIcon.classList.remove("hidden");
+//     playIconPlaybar.classList.add("hidden");
+//     pauseIconPlaybar.classList.remove("hidden");
+//   }
+// };
 
 const showMsg = function (msg, timeout = 1200) {
   if (!alertBox || !alertMsg) return;
@@ -219,9 +219,7 @@ function renderSongs(songs) {
 
     if (window.innerWidth >= 990) {
       musicList.insertAdjacentHTML("beforeend", card);
-      console.log("hiu");
     } else {
-      console.log("hid");
       mobileMusicList.insertAdjacentHTML("beforeend", card);
       mobileAside.classList.remove("translate-x-aside-closed");
       mobileAside.classList.add("shadow-aside");
@@ -259,15 +257,11 @@ function renderAlbum(album) {
   if (album.length < 0) return;
   albumEl.innerHTML = "";
   album.forEach((playlist, i) => {
-    console.log(playlist);
-
     const card = `
        
 <div class="relative play-card rounded-md h-fit cursor-pointer bg-backGround p-1 transition-all duration-200 group" id='${
       playlist[playlist.length - 2]
     }'>
-  <div></div>
-
   <div class="sm:block hidden">
     <img src="../public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
   </div>
@@ -328,7 +322,8 @@ const openAside = () => {
 
 albumEl.addEventListener("click", function (e) {
   const target = e.target.closest(".play-card");
-  if (!target) return;
+  // if (!target && e.target.closest(".delete-btn")) return;
+  if (!target || e.target.closest(".delete-btn")) return;
   openAside();
 });
 
@@ -348,8 +343,6 @@ xMark.addEventListener("click", function (e) {
     mobileAside.classList.add("translate-x-aside-closed");
   mobileAside.classList.remove("shadow-aside");
 });
-// hamBurger.addEventListener("click", openAside);
-// END...
 
 // ------------------------- //
 // Open file dialog on click
@@ -516,17 +509,17 @@ document.addEventListener("keydown", (e) => {
   selectBtn();
 });
 
-// Deleting a Playlist...
+// ------------------------- //
+// PLAYLIST DELETE FIXED
+// ------------------------- //
 albumEl.addEventListener("click", (e) => {
   const deleteBtn = e.target.closest(".delete-btn");
   if (!deleteBtn) return;
 
   const id = deleteBtn.closest(".play-card").id; // playlistId
+
   // 1) LocalStorage se delete
   const index = album.findIndex((playlist) => {
-    console.log(playlist[playlist.length - 2]);
-    console.log(id);
-
     return playlist[playlist.length - 2] === id;
   });
   if (index > -1) {
@@ -554,6 +547,29 @@ albumEl.addEventListener("click", (e) => {
       console.error("Error deleting songs ❌", e.target.error);
     };
   }
+
+  // 3) Agar delete hone wali playlist currently playing hai
+  if (
+    currentPlaylist.length &&
+    currentPlaylist[0].id.slice(0, -2) === id // matlab yehi wali playlist play ho rahi hai
+  ) {
+    // reset all UI + player
+    if (!audioPlayer.paused) {
+      audioPlayer.pause();
+      playIconPlaybar.classList.remove("hidden");
+      pauseIconPlaybar.classList.add("hidden");
+    }
+    audioPlayer.src = "";
+    audioPlayer.dataset.currentId = "";
+    currentPlaylist = [];
+    currentIndex = -1;
+
+    progressBar.value = 0;
+    durationEl.textContent = "00:00 / 00:00";
+    currentPlayedSong.textContent = "";
+  }
   musicList.innerHTML = "";
   mobileMusicList.innerHTML = "";
+
+  showMsg("Playlist deleted successfully!");
 });
