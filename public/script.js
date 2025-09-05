@@ -15,7 +15,7 @@ const albumInput = document.getElementById("albumInput");
 const albumEl = document.getElementById("album");
 const aside = document.querySelector("#desktop-aside");
 const mobileAside = document.querySelector("#mobile-aside");
-const hamBurger = document.querySelector("#hamburger-menu");
+// const hamBurger = document.querySelector("#hamburger-menu");
 const xMark = document.querySelector(".X-mark");
 const mainApp = document.querySelector("#main-app");
 const playlistModal = document.querySelector("#playlist-modal");
@@ -219,7 +219,9 @@ function renderSongs(songs) {
 
     if (window.innerWidth >= 990) {
       musicList.insertAdjacentHTML("beforeend", card);
+      console.log("hiu");
     } else {
+      console.log("hid");
       mobileMusicList.insertAdjacentHTML("beforeend", card);
       mobileAside.classList.remove("translate-x-aside-closed");
       mobileAside.classList.add("shadow-aside");
@@ -262,12 +264,12 @@ function renderAlbum(album) {
     const card = `
        
 <div class="relative play-card rounded-md h-fit cursor-pointer bg-backGround p-1 transition-all duration-200 group" id='${
-      playlist[playlist.length - 1]
+      playlist[playlist.length - 2]
     }'>
   <div></div>
 
   <div class="sm:block hidden">
-    <img src="./public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
+    <img src="../public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
   </div>
 
   <div class="p-3 flex justify-between items-center">
@@ -307,7 +309,7 @@ const createSongList = function () {
     if (!playCard) return;
     album.forEach((playlist) => {
       if (
-        playlist[playlist.length - 1] === playCard.id &&
+        playlist[playlist.length - 2] === playCard.id &&
         !e.target.closest(".delete-btn")
       ) {
         renderSongs(playlist);
@@ -316,16 +318,18 @@ const createSongList = function () {
   });
 };
 createSongList();
+const openAside = () => {
+  if (mobileAside.classList.contains("translate-x-aside-closed")) {
+    mobileAside.classList.remove("translate-x-aside-closed");
+    mobileAside.classList.add("shadow-aside");
+  }
+};
+// open aside...
 
 albumEl.addEventListener("click", function (e) {
   const target = e.target.closest(".play-card");
   if (!target) return;
-  if (aside.classList.contains("hidden")) {
-    // aside.classList.remove("hidden");
-    // aside.classList.add("");
-    toggleClasses(aside, "w-1/3", "w-0");
-  }
-  // if (!aside.classList.contains("hidden")) aside.classList.add("hidden");
+  openAside();
 });
 
 // ------------------------- //
@@ -344,13 +348,7 @@ xMark.addEventListener("click", function (e) {
     mobileAside.classList.add("translate-x-aside-closed");
   mobileAside.classList.remove("shadow-aside");
 });
-hamBurger.addEventListener("click", () => {
-  // Agar aside already hidden hai to open karo
-  if (mobileAside.classList.contains("translate-x-aside-closed")) {
-    mobileAside.classList.remove("translate-x-aside-closed");
-    mobileAside.classList.add("shadow-aside");
-  }
-});
+// hamBurger.addEventListener("click", openAside);
 // END...
 
 // ------------------------- //
@@ -525,9 +523,12 @@ albumEl.addEventListener("click", (e) => {
 
   const id = deleteBtn.closest(".play-card").id; // playlistId
   // 1) LocalStorage se delete
-  const index = album.findIndex(
-    (playlist) => playlist[playlist.length - 1] === id
-  );
+  const index = album.findIndex((playlist) => {
+    console.log(playlist[playlist.length - 2]);
+    console.log(id);
+
+    return playlist[playlist.length - 2] === id;
+  });
   if (index > -1) {
     album.splice(index, 1);
     setLocalStorage("album", album);
@@ -553,4 +554,6 @@ albumEl.addEventListener("click", (e) => {
       console.error("Error deleting songs ❌", e.target.error);
     };
   }
+  musicList.innerHTML = "";
+  mobileMusicList.innerHTML = "";
 });
