@@ -1,5 +1,25 @@
-const mobileMusicList = document.querySelector("#mobile-song-playlist");
+// Containers
+const playlistModal = document.querySelector("#playlist-modal");
+const mainApp = document.querySelector("#main-app");
+
+// Asides
+const aside = document.querySelector("#desktop-aside");
+const mobileAside = document.querySelector("#mobile-aside");
 const musicList = document.querySelector("#song-playlist");
+const mobileMusicList = document.querySelector("#mobile-song-playlist");
+const xMark = document.querySelector(".X-mark");
+
+// Main app
+const addPlaylistBtn = playlistModal.querySelector("button");
+const albumEl = document.getElementById("album");
+const addBtn = document.getElementById("add-playlist");
+const playlistName = playlistModal.querySelector("#playlist-name");
+const albumInput = document.getElementById("albumInput");
+const alertBox = document.querySelector(".alert");
+const alertMsg = document.querySelector(".alert-msg");
+albumEl.innerHTML = "";
+
+// Playbar app
 const playIconPlaybar = document.querySelector("#play-icon-playbar");
 const pauseIconPlaybar = document.querySelector("#pause-icon-playbar");
 const playPauseBtn = document.querySelector(".play-pause-btn");
@@ -10,20 +30,9 @@ const volume = document.querySelector("#volumn_control");
 const durationEl = document.querySelector("#duration");
 const currentPlayedSong = document.querySelector("#current-playedSong p");
 const volumeBtnContainer = document.querySelector(".volumn__control_btn");
-const addBtn = document.getElementById("add-playlist");
-const albumInput = document.getElementById("albumInput");
-const albumEl = document.getElementById("album");
-const aside = document.querySelector("#desktop-aside");
-const mobileAside = document.querySelector("#mobile-aside");
-// const hamBurger = document.querySelector("#hamburger-menu");
-const xMark = document.querySelector(".X-mark");
-const mainApp = document.querySelector("#main-app");
-const playlistModal = document.querySelector("#playlist-modal");
-const playlistName = playlistModal.querySelector("#playlist-name");
-const addPlaylistBtn = playlistModal.querySelector("button");
-const alertBox = document.querySelector(".alert");
-const alertMsg = document.querySelector(".alert-msg");
-albumEl.innerHTML = "";
+
+// Extra
+const classAdd = "flex items-center justify-center h-full w-full";
 
 ///////////////////////////////////////
 // HELPER FUNCTIONS...
@@ -36,22 +45,33 @@ const resetBtn = function (musicList) {
   });
 };
 
-// Toggle play / pause per song
-// const togglePlayPause = function (songId, playIcon, pauseIcon) {
-//   if (audioPlayer.dataset.currentId === songId && !audioPlayer.paused) {
-//     audioPlayer.pause();
-//     playIcon.classList.remove("hidden");
-//     pauseIcon.classList.add("hidden");
-//     playIconPlaybar.classList.remove("hidden");
-//     pauseIconPlaybar.classList.add("hidden");
-//   } else {
-//     playSongFromDB(songId, "play");
-//     playIcon.classList.add("hidden");
-//     pauseIcon.classList.remove("hidden");
-//     playIconPlaybar.classList.add("hidden");
-//     pauseIconPlaybar.classList.remove("hidden");
-//   }
-// };
+const showAlbumEmpty = function () {
+  let html;
+
+  if (album.length <= 0) {
+    html = `
+    <div class="flex flex-col items-center justify-center gap-4 h-full w-full text-gray-400">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        class="w-12 h-12"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <p class="text-lg font-medium">No playlists yet...</p>
+    </div>
+  `;
+
+    // Album container ko empty state ke liye center bana do
+    albumEl.innerHTML = html;
+    albumEl.className = classAdd;
+  }
+};
 
 const showMsg = function (msg, timeout = 1200) {
   if (!alertBox || !alertMsg) return;
@@ -69,10 +89,37 @@ const toggleClasses = (el, add = [], remove = []) => {
 
   if (remove.length) el.classList.remove(...remove);
 };
+// Common play/pause toggle function
+function togglePlayPauseBar() {
+  if (audioPlayer.src && !audioPlayer.src.endsWith("html")) {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      playIconPlaybar.classList.add("hidden");
+      pauseIconPlaybar.classList.remove("hidden");
+    } else {
+      audioPlayer.pause();
+      playIconPlaybar.classList.remove("hidden");
+      pauseIconPlaybar.classList.add("hidden");
+    }
+    return;
+  }
+  showMsg("Audio did't found! Please select...", 2000);
+}
+
+// Set Cards 1 by 1
+function showInOrder(list) {
+  setTimeout(() => {
+    list.querySelectorAll(".song-card").forEach((card, index) => {
+      setTimeout(() => {
+        card.classList.remove("opacity-0");
+      }, index * 100); // har card 200ms gap ke sath visible hoga
+    });
+  }, 100);
+}
 
 // Save to localStorage
 const setLocalStorage = function (itemName, item) {
-  localStorage.setItem(itemName, JSON.stringify(item));
+  return localStorage.setItem(itemName, JSON.stringify(item));
 };
 
 // Load from localStorage
@@ -206,7 +253,7 @@ function renderSongs(songs) {
       song.name.slice(-4) === ".mp3" ? song.name.slice(0, -4) : song.name;
     const card = `
       <div id ="${song.id}" 
-        class="song-card flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-backGround transition-all mb-2">
+        class="song-card opacity-0 flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-backGround transition-all mb-2">
         <div class="w-30">
           🎵
         </div>
@@ -219,10 +266,12 @@ function renderSongs(songs) {
 
     if (window.innerWidth >= 990) {
       musicList.insertAdjacentHTML("beforeend", card);
+      showInOrder(musicList);
     } else {
       mobileMusicList.insertAdjacentHTML("beforeend", card);
       mobileAside.classList.remove("translate-x-aside-closed");
       mobileAside.classList.add("shadow-aside");
+      showInOrder(mobileMusicList);
     }
   });
 
@@ -267,7 +316,7 @@ function renderAlbum(album) {
   </div>
 
   <div class="p-3 flex justify-between items-center">
-    <p class="text-sm playlist-description line-clamp-2">${
+    <p class="md:text-base text-sm font-semibold playlist-description line-clamp-2">${
       playlist[playlist.length - 1]
     }</p>
     
@@ -322,7 +371,6 @@ const openAside = () => {
 
 albumEl.addEventListener("click", function (e) {
   const target = e.target.closest(".play-card");
-  // if (!target && e.target.closest(".delete-btn")) return;
   if (!target || e.target.closest(".delete-btn")) return;
   openAside();
 });
@@ -356,6 +404,8 @@ addBtn.addEventListener("click", () => {
   playlistName.focus();
 });
 addPlaylistBtn.addEventListener("click", (e) => {
+  albumEl.classList =
+    "p-4 md:p-7 gap-5 flex flex-col sm:grid  sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 overflow-y-scroll scrollbar-hide h-full";
   e.preventDefault();
   albumInput.click();
 });
@@ -364,6 +414,7 @@ addPlaylistBtn.addEventListener("click", (e) => {
 // ------------------------- //
 document.addEventListener("DOMContentLoaded", () => {
   renderAlbum(album);
+  showAlbumEmpty();
 });
 
 ///////////////////////////////////////
@@ -374,23 +425,6 @@ function formatTime(sec) {
   const m = Math.floor(sec / 60) || 0;
   const s = Math.floor(sec % 60) || 0;
   return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
-// Common play/pause toggle function
-function togglePlayPauseBar() {
-  if (audioPlayer.src) {
-    if (audioPlayer.paused) {
-      audioPlayer.play();
-      playIconPlaybar.classList.add("hidden");
-      pauseIconPlaybar.classList.remove("hidden");
-    } else {
-      audioPlayer.pause();
-      playIconPlaybar.classList.remove("hidden");
-      pauseIconPlaybar.classList.add("hidden");
-    }
-    return;
-  }
-  showMsg("Audio did't found! Please select...", 2000);
 }
 
 // Button click se
@@ -554,12 +588,9 @@ albumEl.addEventListener("click", (e) => {
     currentPlaylist[0].id.slice(0, -2) === id // matlab yehi wali playlist play ho rahi hai
   ) {
     // reset all UI + player
-    if (!audioPlayer.paused) {
-      audioPlayer.pause();
-      playIconPlaybar.classList.remove("hidden");
-      pauseIconPlaybar.classList.add("hidden");
-    }
     audioPlayer.src = "";
+    playIconPlaybar.classList.remove("hidden");
+    pauseIconPlaybar.classList.add("hidden");
     audioPlayer.dataset.currentId = "";
     currentPlaylist = [];
     currentIndex = -1;
@@ -570,6 +601,6 @@ albumEl.addEventListener("click", (e) => {
   }
   musicList.innerHTML = "";
   mobileMusicList.innerHTML = "";
-
+  showAlbumEmpty();
   showMsg("Playlist deleted successfully!");
 });
