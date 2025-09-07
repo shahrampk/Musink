@@ -11,10 +11,10 @@ let darkMode = localStorage.getItem("theme") === "dark";
 // Load pe apply karo
 if (darkMode) {
   head.classList.add("dark");
-  toggleSlider.classList.remove("-translate-x-9");
+  toggleSlider.classList.add("-translate-x-9");
 } else {
   head.classList.remove("dark");
-  toggleSlider.classList.add("-translate-x-9");
+  toggleSlider.classList.remove("-translate-x-9");
 }
 
 // Toggle button
