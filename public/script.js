@@ -32,7 +32,8 @@ const currentPlayedSong = document.querySelector("#current-playedSong p");
 const volumeBtnContainer = document.querySelector(".volumn__control_btn");
 
 // Extra
-const classAdd = "flex items-center justify-center h-full w-full";
+const classAdd =
+  "border dark:border-none rounded-lg flex items-center justify-center h-full w-full";
 
 ///////////////////////////////////////
 // HELPER FUNCTIONS...
@@ -50,7 +51,7 @@ const showAlbumEmpty = function () {
 
   if (album.length <= 0) {
     html = `
-    <div class="flex flex-col items-center justify-center gap-4 h-full w-full text-gray-400">
+    <div class=" flex flex-col items-center justify-center gap-4 h-full w-full text-gray-500 select-none">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -69,7 +70,7 @@ const showAlbumEmpty = function () {
 
     // Album container ko empty state ke liye center bana do
     albumEl.innerHTML = html;
-    albumEl.className = classAdd;
+    albumEl.classList = classAdd;
   }
 };
 
@@ -253,12 +254,12 @@ function renderSongs(songs) {
       song.name.slice(-4) === ".mp3" ? song.name.slice(0, -4) : song.name;
     const card = `
       <div id ="${song.id}" 
-        class="song-card opacity-0 flex items-center justify-between cursor-pointer bg-gray-800 p-3 rounded-lg gap-4 hover:bg-backGround transition-all mb-2">
+        class="song-card opacity-0 flex items-center justify-between text-gray-800 cursor-pointer border dark:border-none dark:bg-gray-800 p-3 rounded-lg gap-4 hover:bg-gray-200 dark:hover:bg-backGround transition-all mb-2">
         <div class="w-30">
           🎵
         </div>
         <div class="flex-1">
-          <p class="song-name text-white text-sm line-clamp-2">${
+          <p class="song-name dark:text-white text-sm line-clamp-2">${
             songName[0].toUpperCase() + songName.slice(1)
           }</p>
         </div>
@@ -307,35 +308,32 @@ function renderAlbum(album) {
   albumEl.innerHTML = "";
   album.forEach((playlist, i) => {
     const card = `
-       
-<div class="relative play-card rounded-md h-fit cursor-pointer bg-backGround p-1 transition-all duration-200 group" id='${
-      playlist[playlist.length - 2]
-    }'>
-  <div class="sm:block hidden">
-    <img src="../public/assets/playlist-image.jpg" alt="Playlist cover" class="w-full object-cover rounded-md" />
-  </div>
-
-  <div class="p-3 flex justify-between items-center">
-    <p class="md:text-base text-sm font-semibold playlist-description line-clamp-2">${
-      playlist[playlist.length - 1]
-    }</p>
-    
-    <!-- delete-btn: hidden by default, visible on card hover -->
-    <div class="delete-btn w-fit md:absolute top-4 right-4 transition-all duration-500 bg-red-800 p-1 pl-0 rounded flex justify-center items-center cursor-pointer opacity-0 group-hover:opacity-100 group/delete">
-      
-      <!-- delete text: hidden by default, visible on icon hover -->
-      <p class=" opacity-0 transition-all duration-200 group-hover/delete:opacity-100 group-hover/delete:text-sm text-none ml-1">
-        Delete
-      </p>
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="20">
-        <path fill-rule="evenodd"
-          d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
-          clip-rule="evenodd" />
-      </svg>
-    </div>
-  </div>
-</div>
+           <div class="relative play-card rounded-md h-fit cursor-pointer bg-backGround dark:p-1 transition-all duration-200 group border dark:border-none"
+              id='${playlist[playlist.length - 2]}'>
+              <div class="sm:block hidden">
+                  <img src="./public/assets/dark.jpg" alt="Playlist cover"
+                      class="w-full object-cover dark:rounded-md hidden dark:block" />
+                  <img src="./public/assets/light.png" alt="Playlist cover"
+                      class="w-full object-cover dark:rounded-md border-b block dark:hidden" />
+              </div>
+              <div class="p-3 flex justify-between items-center">
+                  <p class="md:text-base text-sm font-semibold playlist-description line-clamp-2">
+                      ${playlist[playlist.length - 1]}
+                  </p>
+                  <div
+                      class="delete-btn w-fit md:absolute top-4 right-4 transition-all duration-500 bg-red-800 p-1 pl-0 rounded flex justify-center items-center cursor-pointer opacity-0 group-hover:opacity-100 group/delete text-white">
+                      <p
+                          class=" opacity-0 transition-all duration-200 group-hover/delete:opacity-100 group-hover/delete:text-sm text-none ml-1">
+                          Delete
+                      </p>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="20">
+                          <path fill-rule="evenodd"
+                              d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
+                              clip-rule="evenodd" />
+                      </svg>
+                  </div>
+              </div>
+          </div>
 
 
 `;
@@ -405,7 +403,7 @@ addBtn.addEventListener("click", () => {
 });
 addPlaylistBtn.addEventListener("click", (e) => {
   albumEl.classList =
-    "p-4 md:p-7 gap-5 flex flex-col sm:grid  sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 overflow-y-scroll scrollbar-hide h-full";
+    "p-4 md:p-7 gap-5 flex flex-col sm:grid sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 overflow-y-scroll scrollbar-hide h-full rounded-lg border dark:border-none";
   e.preventDefault();
   albumInput.click();
 });

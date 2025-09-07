@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class", // 'media' bhi ho sakta hai, but class best hai
   content: ["./public/**/*.{html,js}"],
   theme: {
     extend: {
@@ -48,7 +49,7 @@ module.exports = {
         none: "0px",
       },
       boxShadow: {
-        aside: "3px 4px 20px 8px rgba(0, 0, 0, 0.4)",
+        aside: "0px 2px 5px rgba(0, 0, 0, 0.2)",
       },
       translate: {
         "aside-closed": "-105%",
