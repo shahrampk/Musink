@@ -39,10 +39,10 @@ Musink is a **web-based audio player** that allows users to **create and manage 
 ## 📸 Screenshots  
 
 ### 🌙 Dark Theme  
-![Dark Theme](./screenshots/dark-theme.png)  
+![Dark Theme](<a href="https://ibb.co/7ddhbTCm"><img src="https://i.ibb.co/399Kk8dZ/dark-theme.png" alt="dark-theme" border="0"></a>)  
 
 ### ☀️ Light Theme  
-![Light Theme](./screenshots/light-theme.png)  
+![Light Theme](<a href="https://ibb.co/Y7gV3dhh"><img src="https://i.ibb.co/PZkVNWgg/light-theme.png" alt="light-theme" border="0"></a>)  
 
 ---
 
