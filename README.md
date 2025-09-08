@@ -9,6 +9,12 @@ Musink is a **web-based audio player** that allows users to **create and manage 
 
 ---
 
+## 👨‍💻 Author
+
+Developed by **Muhammad Shahram** ✨
+
+---
+
 ## 🚀 Live Demo
 
 👉 [Try Musink here](https://shahrampk.github.io/Musink/)
@@ -23,7 +29,7 @@ Musink is a **web-based audio player** that allows users to **create and manage 
 - 🌓 **Dark / Light Theme Toggle**
 - 🔊 **Volume Control**
 - ❌ **Delete Playlist Option**
-- 💾 **Persistent Playlists** (using LocalStorage & IndexedDB)
+- 💾 **Persistent Playlists**
 
 ---
 
@@ -40,24 +46,18 @@ Musink is a **web-based audio player** that allows users to **create and manage 
 
 ### 🌙 Dark Theme
 
-(<a href="https://ibb.co/7ddhbTCm"><img src="https://i.ibb.co/399Kk8dZ/dark-theme.png" alt="dark-theme" border="0"></a>)
+<a href="https://ibb.co/PZh3sVkQ"><img src="https://i.ibb.co/HDz1L9Zd/dark-theme.png" alt="dark-theme" border="0"></a>
 
 ### ☀️ Light Theme
 
-(<a href="https://ibb.co/Y7gV3dhh"><img src="https://i.ibb.co/PZkVNWgg/light-theme.png" alt="light-theme" border="0"></a>)
+<a href="https://ibb.co/p6V7mmpJ"><img src="https://i.ibb.co/MywvXXLM/light-theme.png" alt="light-theme" border="0"></a>
 
 ---
 
 ## 🖥️ Usage
 
 No installation required.  
-Simply open the `index.html` file in your browser and enjoy Musink!
-
----
-
-## 👨‍💻 Author
-
-Developed by **Muhammad Shahram** ✨
+Simply open the `shahrampk.github.io/Musink/` in your browser and enjoy Musink!
 
 ---
 
